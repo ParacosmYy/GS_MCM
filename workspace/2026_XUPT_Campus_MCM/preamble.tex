@@ -1,0 +1,94 @@
+% ============================================================
+% preamble.tex — 西邮 2026 校赛数学建模论文排版设置
+% 引擎：xelatex    文档类：ctexart（中文）
+% ============================================================
+
+% ---------- 页面与字体 ----------
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\linespread{1.5}                      % 1.5 倍行距
+\setlength{\parskip}{0.3em}
+
+% ---------- 数学 ----------
+\usepackage{amsmath, amssymb, amsthm, mathtools, bm}
+\numberwithin{equation}{section}      % 公式按章节编号
+
+% ---------- 图表 ----------
+\usepackage{graphicx}
+\usepackage{booktabs}                 % 三线表
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\captionsetup{font=small, labelfont=bf}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\graphicspath{{figures/}}
+
+% ---------- 列表与链接 ----------
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    bookmarksnumbered=true
+}
+
+% ---------- 代码块 ----------
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\definecolor{codekw}{rgb}{0.00,0.00,0.70}
+\definecolor{codestr}{rgb}{0.58,0.00,0.00}
+\definecolor{codecom}{rgb}{0.25,0.50,0.35}
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    stringstyle=\color{codestr},
+    commentstyle=\color{codecom}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{codegray},
+    frame=single,
+    rulecolor=\color{codegray},
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    columns=flexible,
+    extendedchars=false,
+    inputencoding=utf8
+}
+
+% ---------- 参考文献（国标 GB/T 7714-2015） ----------
+\usepackage[backend=biber, style=gb7714-2015, gbpub=false]{biblatex}
+\addbibresource{refs.bib}
+
+% ---------- 段落缩进 ----------
+\setlength{\parindent}{2em}           % 中文首行缩进两字符
+
+% ---------- 定理环境 ----------
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{remark}{注}[section]
+
+% ---------- 页眉页脚 ----------
+\usepackage{fancyhdr}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small 2026 西邮校赛数学建模}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}

@@ -1,146 +1,53 @@
-\documentclass[a4paper,12pt]{ctexart}
+% ============================================================
+% 2026 西安邮电大学 校赛数学建模  主文件
+% 编译：xelatex paper.tex && biber paper && xelatex paper.tex && xelatex paper.tex
+% 或在 VSCode 中使用 LaTeX Workshop 的 xelatex x2 配方（保存自动编译）
+% ============================================================
+\documentclass[a4paper, 12pt]{ctexart}
 
-% ========== Packages ==========
-\usepackage{amsmath, amssymb, amsthm}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{geometry}
-\usepackage{hyperref}
-\usepackage{listings}
-\usepackage{xcolor}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{float}
-\usepackage{enumitem}
-\usepackage{url}
+\input{preamble.tex}
 
-% ========== Layout ==========
-\geometry{margin=2.5cm}
-\setlength{\parindent}{2em}
-\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=blue}
-
-% ========== Code listing style ==========
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codebg}{rgb}{0.97,0.97,0.97}
-\lstset{
-    backgroundcolor=\color{codebg},
-    basicstyle=\ttfamily\footnotesize,
-    numbers=left,
-    numberstyle=\tiny\color{codegray},
-    frame=single,
-    breaklines=true,
-    showstringspaces=false,
-    tabsize=4
-}
-
-% ========== Title ==========
-\title{\textbf{2026 XUPT Campus Mathematical Contest in Modeling\\ \large Problem X: [Title Here]}}
-\author{Team Number: \underline{\quad\quad\quad\quad}}
+% ---------- 标题信息 ----------
+\title{\textbf{2026 西安邮电大学校赛数学建模\\ \large 题目 X：[题目标题]}}
+\author{参赛队号：\underline{\qquad\qquad\qquad}}
 \date{\today}
 
 \begin{document}
 
+% ---------- 封面 ----------
 \maketitle
+\thispagestyle{empty}
 
-% ========== Abstract ==========
-\begin{abstract}
-\noindent\textbf{Abstract:} Briefly describe the problem background, methodology, key results, and conclusions in one paragraph (approximately 300--500 words).
+% ---------- 摘要（单独一页） ----------
+\newpage
+\pagenumbering{Roman}
+\input{sections/00_abstract.tex}
 
-\vspace{0.5em}
-\noindent\textbf{Keywords:} keyword1; keyword2; keyword3
-\end{abstract}
-
+% ---------- 目录 ----------
 \newpage
 \tableofcontents
+
+% ---------- 正文 ----------
 \newpage
+\pagenumbering{arabic}
 
-% ==========================================
-\section{Problem Restatement}
-\subsection{Background}
-Restate the problem background concisely.
+\input{sections/01_problem.tex}
+\input{sections/02_assumptions.tex}
+\input{sections/03_notation.tex}
+\input{sections/04_model1.tex}
+\input{sections/05_model2.tex}
+\input{sections/06_sensitivity.tex}
+\input{sections/07_evaluation.tex}
+\input{sections/08_conclusion.tex}
 
-\subsection{Problem Analysis}
-\begin{itemize}
-    \item \textbf{Problem 1:} ...
-    \item \textbf{Problem 2:} ...
-\end{itemize}
+% ---------- 参考文献 ----------
+\newpage
+\printbibliography[title={参考文献}]
 
-% ==========================================
-\section{Assumptions and Notations}
-\subsection{Fundamental Assumptions}
-\begin{enumerate}
-    \item Assumption 1.
-    \item Assumption 2.
-\end{enumerate}
-
-\subsection{Notations}
-\begin{table}[H]
-    \centering
-    \caption{Symbol Descriptions}
-    \begin{tabular}{@{}clc@{}}
-        \toprule
-        Symbol & Description & Unit \\
-        \midrule
-        $x$ & Decision variable & -- \\
-        $t$ & Time & s \\
-        $\lambda$ & Lagrange multiplier & -- \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-% ==========================================
-\section{Model Establishment and Solution}
-
-\subsection{Problem 1: Model Building}
-A sample equation:
-\begin{equation}
-    \min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0,\; i=1,\dots,m
-    \label{eq:opt}
-\end{equation}
-
-\subsection{Problem 1: Algorithm Design}
-Describe the solver or heuristic used.
-
-\subsection{Problem 1: Results}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.7\textwidth]{figures/result1.png}
-%     \caption{Result of Problem 1}
-%     \label{fig:res1}
-% \end{figure}
-
-% ==========================================
-\section{Sensitivity Analysis}
-Analyze how the solution changes with perturbations to key parameters.
-
-% ==========================================
-\section{Model Evaluation}
-\subsection{Strengths}
-\begin{itemize}
-    \item ...
-\end{itemize}
-
-\subsection{Weaknesses}
-\begin{itemize}
-    \item ...
-\end{itemize}
-
-\subsection{Extensions}
-Potential improvements and generalizations.
-
-% ==========================================
-\section{Conclusion}
-Summarize findings.
-
-% ==========================================
-\begin{thebibliography}{99}
-    \bibitem{ref1} Author A. \textit{Title of Paper}. Journal Name, Year.
-    \bibitem{ref2} Author B. \textit{Book Title}. Publisher, Year.
-\end{thebibliography}
-
-% ==========================================
+% ---------- 附录 ----------
+\newpage
 \appendix
-\section{Source Code}
-\lstinputlisting[language=Python, caption={Main solver}]{code/main.py}
+\section{程序源代码}
+\lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
 
 \end{document}

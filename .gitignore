@@ -41,12 +41,8 @@ venv/
 *.vrb
 
 # ---- Data (large / sensitive) ----
-# Tracked sample data is allowed; bulk raw data is not.
-**/data/*.zip
-**/data/*.7z
-**/data/*.parquet
-**/data/*.h5
-**/data/*.mat
+# 校赛 / 国赛题目附件通常较小（xlsx / csv / 小压缩包），允许入库方便复现。
+# 仅忽略 raw/ 下的大体积原始数据兜底。
 **/data/raw/
 
 # ---- OS / editor ----
