@@ -7,14 +7,23 @@
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 
 % ---------- 行距与段距 ----------
-% 国赛通用：1.3 倍行距，段前段后紧凑
+% 国赛通用：1.3 倍行距，段间距清零，首行缩进两字符
 \linespread{1.3}
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{2em}
 
+% ---------- 英文主字体（Times New Roman，国赛惯用） ----------
+% Windows 自带 Times New Roman；如为其他系统，xelatex 会自动回退到默认 serif
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{}
+
 % ---------- 数学 ----------
 \usepackage{amsmath, amssymb, amsthm, mathtools, bm}
 \numberwithin{equation}{section}
+
+% ---------- 单位 / 数字 ----------
+\usepackage{siunitx}
+\sisetup{detect-all, per-mode=symbol, inter-unit-product=\ensuremath{{}\cdot{}}}
 
 % ---------- 图表 ----------
 \usepackage{graphicx}
@@ -30,26 +39,30 @@
 \numberwithin{table}{section}
 \graphicspath{{figures/}}
 
+% ---------- TikZ 流程图 ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning, calc}
+
 % ---------- 列表（紧凑） ----------
 \usepackage{enumitem}
-\setlist{itemsep=2pt, topsep=2pt, parsep=0pt}
+\setlist{itemsep=3pt, topsep=3pt, parsep=0pt}
 
 % ---------- 算法伪代码 ----------
 \usepackage[ruled, linesnumbered]{algorithm2e}
 \SetAlgorithmName{算法}{算法}{算法列表}
 
-% ---------- 链接 ----------
+% ---------- 链接（电子版建议蓝色，打印版可改为 black） ----------
 \usepackage{url}
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
-    linkcolor=black,
-    citecolor=blue,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
     urlcolor=blue,
     bookmarksnumbered=true
 }
 
-% ---------- 代码块 ----------
+% ---------- 代码块（保留原始缩进，等宽对齐） ----------
 \usepackage{xcolor}
 \usepackage{listings}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -72,7 +85,8 @@
     showstringspaces=false,
     tabsize=4,
     captionpos=b,
-    columns=flexible,
+    columns=fixed,
+    keepspaces=true,
     extendedchars=false,
     inputencoding=utf8
 }
@@ -91,19 +105,22 @@
 \newtheorem{example}{例}[section]
 \newtheorem{remark}{注}[section]
 
-% ---------- 目录样式（压缩间距，限定到 section） ----------
-\setcounter{tocdepth}{1}
-\usepackage{titletoc}
-\titlecontents{section}[2em]{\vspace{2pt}\bfseries}
-    {\contentslabel{2em}}{\hspace*{-2em}}
-    {\titlerule*[8pt]{.}\contentspage}
-
-% 目录标题居中、黑体、小二号
+% ---------- 章节标题（xelatex + ctex 陷阱：heiti 已是粗体，勿再叠加 bfseries） ----------
 \usepackage{titlesec}
-\titleformat{\section}{\heiti\large\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}{\heiti\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\section}{\heiti\zihao{-3}}{\thesection}{1em}{}
+\titleformat{\subsection}{\heiti\zihao{4}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\heiti\zihao{-4}}{\thesubsubsection}{1em}{}
 \titlespacing*{\section}{0pt}{12pt}{6pt}
 \titlespacing*{\subsection}{0pt}{8pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{6pt}{3pt}
+
+% ---------- 目录（压缩间距，限定到 section，简洁居中标题） ----------
+\setcounter{tocdepth}{1}
+\renewcommand{\contentsname}{\centerline{\heiti\zihao{-2} 目\quad 录}}
+\usepackage{titletoc}
+\titlecontents{section}[2em]{\vspace{2pt}\heiti}
+    {\contentslabel{2em}}{\hspace*{-2em}}
+    {\titlerule*[8pt]{.}\contentspage}
 
 % ---------- 页眉页脚 ----------
 \usepackage{fancyhdr}
@@ -111,12 +128,19 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small 2026 西邮校赛数学建模}
-\fancyhead[R]{\small 第 \thepage 页}
-\fancyfoot{}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\small \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
+% 摘要页使用 plain 样式，保留页码（罗马数字 I）
+\fancypagestyle{abstractstyle}{%
+    \fancyhf{}
+    \fancyfoot[C]{\small \thepage}
+    \renewcommand{\headrulewidth}{0pt}
+}
+
 % ---------- 自定义命令 ----------
-% 摘要标题样式（国赛通用：居中"摘 要"黑体小二）
+% 摘要页标题（居中"摘 要"黑体小二）
 \newcommand{\abstracttitle}{%
     \begin{center}
         {\heiti\zihao{-2} 摘\quad 要}
@@ -124,8 +148,11 @@
     \vspace{0.5em}
 }
 
-% 关键词
+% 关键词（国赛惯例：分号分隔）
 \newcommand{\keywords}[1]{%
     \vspace{1em}
     \noindent{\heiti 关键词：}\quad #1
 }
+
+% 封面用下划线填充框（对齐基线，不随字体漂浮）
+\newcommand{\ulfield}[1]{\underline{\makebox[#1][c]{\ }}}

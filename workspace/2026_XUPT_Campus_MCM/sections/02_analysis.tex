@@ -12,9 +12,29 @@
 \subsection{整体求解思路}
 本文整体求解思路如图~\ref{fig:framework} 所示。
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{framework.png}
-%     \caption{本文求解框架图}
-%     \label{fig:framework}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.2cm,
+        box/.style={rectangle, rounded corners, draw=black, thick,
+                    minimum width=6em, minimum height=2em, align=center, font=\small},
+        arrow/.style={-Stealth, thick}
+    ]
+        \node[box, fill=blue!10]   (p)  {题目分析};
+        \node[box, fill=blue!10,  below=of p]  (a)  {模型假设};
+        \node[box, fill=green!15, below=of a]  (m1) {问题一建模};
+        \node[box, fill=green!15, below=of m1] (m2) {问题二建模};
+        \node[box, fill=green!15, below=of m2] (m3) {问题三建模};
+        \node[box, fill=orange!20, below=of m3] (v)  {模型检验与推广};
+        \node[box, fill=red!10,    below=of v]  (c)  {结论};
+
+        \draw[arrow] (p)  -- (a);
+        \draw[arrow] (a)  -- (m1);
+        \draw[arrow] (m1) -- (m2);
+        \draw[arrow] (m2) -- (m3);
+        \draw[arrow] (m3) -- (v);
+        \draw[arrow] (v)  -- (c);
+    \end{tikzpicture}
+    \caption{本文整体求解框架}
+    \label{fig:framework}
+\end{figure}

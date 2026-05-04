@@ -1,34 +1,41 @@
-% ---- 国赛通用样式封面 ----
+% ---- 封面（承诺书风格，保留） ----
 \begin{titlepage}
     \centering
-    \vspace*{2cm}
+    \thispagestyle{empty}
+    \vspace*{1.5cm}
 
-    {\heiti\zihao{1} 2026 西安邮电大学\\[0.5em] 校园数学建模竞赛}
+    {\heiti\zihao{1} 2026 西安邮电大学}\\[0.6em]
+    {\heiti\zihao{1} 校园数学建模竞赛}
 
-    \vspace{2cm}
+    \vspace{1.5cm}
 
     {\heiti\zihao{-2} 承\quad 诺\quad 书}
 
-    \vspace{1.5em}
+    \vspace{1.2em}
 
-    \begin{flushleft}
-    \zihao{4}\quad 我们仔细阅读了本次竞赛的规则，完全明白竞赛的各项要求。我们郑重承诺，严格遵守竞赛规则，以保证竞赛的公正、公平性。如有违反规则的行为，我们将受到严肃处理。
+    \begin{minipage}{0.88\textwidth}
+        \zihao{4}
+        \setlength{\parindent}{2em}
+        我们仔细阅读了本次竞赛的规则，完全明白竞赛的各项要求。我们郑重承诺，严格遵守竞赛规则，以保证竞赛的公正、公平性。如有违反规则的行为，我们将受到严肃处理。
 
-    \vspace{1em}
-    \quad 我们授权将我们的论文以任何形式进行公开展示（包括进行网上公示，在书籍、期刊和其他媒体进行正式或非正式发表等）。
-    \end{flushleft}
+        我们授权将我们的论文以任何形式进行公开展示，包括进行网上公示，在书籍、期刊和其他媒体进行正式或非正式发表等。
+    \end{minipage}
 
-    \vspace{2em}
+    \vspace{1.8em}
 
-    \begin{tabular}{rl}
-        \zihao{4} 我们选择的题号是（从 A / B / C 中选择一项填写）： & \underline{\makebox[6em]{\quad}} \\[1em]
-        \zihao{4} 参赛队号：                                          & \underline{\makebox[12em]{\quad}} \\[1em]
-        \zihao{4} 参赛队员（打印并签名）：                            & \\[0.5em]
-        \zihao{4} \quad 1.                                            & \underline{\makebox[12em]{\quad}} \\[1em]
-        \zihao{4} \quad 2.                                            & \underline{\makebox[12em]{\quad}} \\[1em]
-        \zihao{4} \quad 3.                                            & \underline{\makebox[12em]{\quad}} \\[1em]
-        \zihao{4} 日期：                                              & \underline{\makebox[12em]{2026 年\qquad 月\qquad 日}}
-    \end{tabular}
+    \begin{minipage}{0.88\textwidth}
+        \zihao{4}
+        \renewcommand{\arraystretch}{1.8}
+        \begin{tabular}{@{}p{8em}p{22em}@{}}
+            题\hfill 目：         & \ulfield{22em} \\
+            我们选择的题号：     & \ulfield{6em} \quad (A / B / C) \\
+            参赛队号：           & \ulfield{22em} \\
+            参赛队员一（签名）： & \ulfield{22em} \\
+            参赛队员二（签名）： & \ulfield{22em} \\
+            参赛队员三（签名）： & \ulfield{22em} \\
+            日\hfill 期：        & \ulfield{22em}
+        \end{tabular}
+    \end{minipage}
 
     \vfill
 \end{titlepage}

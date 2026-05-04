@@ -2,6 +2,11 @@
 % 2026 西安邮电大学 校赛数学建模 主文件
 % 编译：xelatex → biber → xelatex → xelatex
 % 推荐：VSCode + LaTeX Workshop（保存触发 xelatex x2）
+%
+% Label 命名约定：
+%   sec:<name>    章节        fig:<name>    图
+%   tab:<name>    表          eq:<name>     公式
+%   alg:<name>    算法        thm:<name>    定理
 % ============================================================
 \documentclass[a4paper, 12pt]{ctexart}
 
@@ -12,17 +17,16 @@
 % ---------- 封面（承诺书） ----------
 \input{sections/00_cover.tex}
 
-% ---------- 摘要页 ----------
+% ---------- 摘要页（页码 I, II, ...） ----------
 \newpage
 \pagenumbering{Roman}
 \input{sections/00_abstract.tex}
 
 % ---------- 目录 ----------
 \newpage
-\renewcommand{\contentsname}{\hfill\heiti\zihao{-2} 目\quad 录 \hfill}
 \tableofcontents
 
-% ---------- 正文 ----------
+% ---------- 正文（页码 1, 2, ...） ----------
 \newpage
 \pagenumbering{arabic}
 
@@ -32,7 +36,7 @@
 \input{sections/04_notation.tex}
 \input{sections/05_model1.tex}
 \input{sections/06_model2.tex}
-\input{sections/07_model3.tex}         % 若只有两题，注释本行
+\input{sections/07_model3.tex}         % 若比赛只有两题，注释本行即可
 \input{sections/08_validation.tex}
 \input{sections/09_evaluation.tex}
 
@@ -43,14 +47,19 @@
 % ---------- 附录 ----------
 \newpage
 \appendix
+
 \section*{附录 A\quad 程序源代码}
 \addcontentsline{toc}{section}{附录 A\quad 程序源代码}
-\lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
+% 需要将 code/main.py 贴入论文时，取消下一行注释；否则保持占位说明：
+% \lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
+\noindent 程序源代码见交付文件 \texttt{code/main.py}（受篇幅所限，此处从略）。
 
-% \section*{附录 B\quad 补充数据表}
-% \addcontentsline{toc}{section}{附录 B\quad 补充数据表}
+\section*{附录 B\quad 补充数据表}
+\addcontentsline{toc}{section}{附录 B\quad 补充数据表}
+\noindent 补充数据表格（可按需填入）。
 
-% \section*{附录 C\quad 补充证明}
-% \addcontentsline{toc}{section}{附录 C\quad 补充证明}
+\section*{附录 C\quad 补充推导}
+\addcontentsline{toc}{section}{附录 C\quad 补充推导}
+\noindent 较长的数学推导过程（可按需填入）。
 
 \end{document}
