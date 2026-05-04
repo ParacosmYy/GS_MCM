@@ -11,7 +11,7 @@
 其中 $f(x)$ 为目标函数，$g_i(x)$ 为约束条件。
 
 \subsection{算法设计}
-采用 XXXX 算法求解式~\eqref{eq:model1}，流程如算法~\ref{alg:solve1} 所示。
+采用 XXXX 算法求解式~\eqref{eq:model1}。伪代码见算法~\ref{alg:solve1}，直观流程见图~\ref{fig:flow1}。
 
 \begin{algorithm}[H]
     \caption{问题一求解算法}
@@ -25,6 +25,33 @@
     }
     \Return{$x^* = x$}\;
 \end{algorithm}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0.8cm and 1.2cm]
+        \node[terminal]                              (s)  {开始};
+        \node[ionode,   below=of s]                  (in) {读入数据 $\mathcal{D}$};
+        \node[procbox,  below=of in]                 (i)  {初始化 $x \leftarrow x_0$};
+        \node[procbox,  below=of i]                  (u)  {依据 XXX 规则更新 $x$};
+        \node[procbox,  below=of u]                  (e)  {计算 $f(x)$};
+        \node[decision, below=of e, yshift=-0.2cm]   (c)  {是否收敛？};
+        \node[ionode,   below=of c, yshift=-0.2cm]   (o)  {输出 $x^*$};
+        \node[terminal, below=of o]                  (end){结束};
+
+        \draw[arrow] (s)  -- (in);
+        \draw[arrow] (in) -- (i);
+        \draw[arrow] (i)  -- (u);
+        \draw[arrow] (u)  -- (e);
+        \draw[arrow] (e)  -- (c);
+        \draw[arrow] (c)  -- node[right, font=\small]{是} (o);
+        \draw[arrow] (o)  -- (end);
+        % 否 → 回到更新步
+        \draw[arrow] (c.east) -- ++(2,0) node[above, font=\small, pos=0.5]{否}
+                              |- (u.east);
+    \end{tikzpicture}
+    \caption{问题一求解流程图}
+    \label{fig:flow1}
+\end{figure}
 
 \subsection{结果与分析}
 求解结果如表~\ref{tab:result1} 所示，结果表明 XXXX。

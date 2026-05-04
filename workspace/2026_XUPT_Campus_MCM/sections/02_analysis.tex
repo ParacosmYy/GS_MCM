@@ -14,26 +14,33 @@
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[
-        node distance=1.2cm,
-        box/.style={rectangle, rounded corners, draw=black, thick,
-                    minimum width=6em, minimum height=2em, align=center, font=\small},
-        arrow/.style={-Stealth, thick}
-    ]
-        \node[box, fill=blue!10]   (p)  {题目分析};
-        \node[box, fill=blue!10,  below=of p]  (a)  {模型假设};
-        \node[box, fill=green!15, below=of a]  (m1) {问题一建模};
-        \node[box, fill=green!15, below=of m1] (m2) {问题二建模};
-        \node[box, fill=green!15, below=of m2] (m3) {问题三建模};
-        \node[box, fill=orange!20, below=of m3] (v)  {模型检验与推广};
-        \node[box, fill=red!10,    below=of v]  (c)  {结论};
+    \begin{tikzpicture}[node distance=0.9cm and 1.5cm]
+        % 左侧主流程
+        \node[terminal]                              (p)   {题目分析};
+        \node[procbox,  below=of p]                  (a)   {模型假设};
+        \node[procbox,  below=of a]                  (n)   {符号说明};
+        \node[procbox,  below=of n]                  (m1)  {问题一：XXX 模型};
+        \node[procbox,  below=of m1]                 (m2)  {问题二：XXX 模型};
+        \node[procbox,  below=of m2]                 (m3)  {问题三：XXX 模型};
+        \node[decision, below=of m3, yshift=-0.3cm]  (d)   {灵敏度\\检验通过？};
+        \node[terminal, below=of d, yshift=-0.3cm]   (c)   {结论与推广};
 
+        % 右侧求解方法框（fit 包住 m1-m3）
+        \node[draw=black, dashed, thick,
+              fit=(m1)(m2)(m3),
+              inner sep=10pt,
+              label={[font=\small\heiti]right:{核心建模}}] (core) {};
+
+        % 连线
         \draw[arrow] (p)  -- (a);
-        \draw[arrow] (a)  -- (m1);
+        \draw[arrow] (a)  -- (n);
+        \draw[arrow] (n)  -- (m1);
         \draw[arrow] (m1) -- (m2);
         \draw[arrow] (m2) -- (m3);
-        \draw[arrow] (m3) -- (v);
-        \draw[arrow] (v)  -- (c);
+        \draw[arrow] (m3) -- (d);
+        \draw[arrow] (d)  -- node[right, font=\small]{是} (c);
+        % 否 → 返回重新建模
+        \draw[arrow] (d.west) -- ++(-1.2,0) |- node[pos=0.25, left, font=\small]{否} (core.west);
     \end{tikzpicture}
     \caption{本文整体求解框架}
     \label{fig:framework}
