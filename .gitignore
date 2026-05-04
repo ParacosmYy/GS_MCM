@@ -1,0 +1,83 @@
+# ============================================================
+# GS_MCM — .gitignore
+# Keep the repo lightweight: only source .tex / .py / configs
+# Never commit the tool chain, venv, or MiKTeX.
+# ============================================================
+
+# ---- Tool chain (NEVER commit) ----
+miktex/
+texlive/
+python-venv/
+*.exe
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+env/
+venv/
+
+# ---- LaTeX build artifacts ----
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.xdv
+*.nav
+*.snm
+*.vrb
+
+# ---- Data (large / sensitive) ----
+# Tracked sample data is allowed; bulk raw data is not.
+**/data/*.zip
+**/data/*.7z
+**/data/*.parquet
+**/data/*.h5
+**/data/*.mat
+**/data/raw/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ---- IDE local overrides ----
+.vscode/*.local.json
+.idea/
+*.code-workspace.local
+
+# ---- Force-include shared workspace config (overrides global gitignore) ----
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+!math.code-workspace
+
+# ---- Diagnostic / temp scripts ----
+_diag.ps1
+_*.ps1
+
+# ---- AutoMCM-Pro (third-party skill, clone separately) ----
+AutoMCM-Pro/
+**/pipeline.json
+**/memory/thought_process.md
+
+# ---- Misc ----
+*.tmp
+*.bak
+*.orig
