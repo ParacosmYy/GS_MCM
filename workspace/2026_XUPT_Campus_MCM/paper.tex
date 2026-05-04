@@ -22,8 +22,9 @@
 \pagenumbering{Roman}
 \input{sections/00_abstract.tex}
 
-% ---------- 目录 ----------
+% ---------- 目录（无页眉） ----------
 \newpage
+\thispagestyle{abstractstyle}
 \tableofcontents
 
 % ---------- 正文（页码 1, 2, ...） ----------
@@ -48,18 +49,18 @@
 \newpage
 \appendix
 
-\section*{附录 A\quad 程序源代码}
-\addcontentsline{toc}{section}{附录 A\quad 程序源代码}
-% 需要将 code/main.py 贴入论文时，取消下一行注释；否则保持占位说明：
+\section{\texorpdfstring{附录 A\quad 程序源代码}{附录 A 程序源代码}}
+\markright{附录 A\quad 程序源代码}
+% 需要将 code/main.py 贴入论文时，取消下一行注释：
 % \lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
-\noindent 程序源代码见交付文件 \texttt{code/main.py}（受篇幅所限，此处从略）。
+\noindent 完整源代码以附件形式随论文提交，见 \texttt{code/main.py}。
 
-\section*{附录 B\quad 补充数据表}
-\addcontentsline{toc}{section}{附录 B\quad 补充数据表}
+\section{\texorpdfstring{附录 B\quad 补充数据表}{附录 B 补充数据表}}
+\markright{附录 B\quad 补充数据表}
 \noindent 补充数据表格（可按需填入）。
 
-\section*{附录 C\quad 补充推导}
-\addcontentsline{toc}{section}{附录 C\quad 补充推导}
+\section{\texorpdfstring{附录 C\quad 补充推导}{附录 C 补充推导}}
+\markright{附录 C\quad 补充推导}
 \noindent 较长的数学推导过程（可按需填入）。
 
 \end{document}

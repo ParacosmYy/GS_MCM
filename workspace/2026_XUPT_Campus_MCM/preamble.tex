@@ -38,6 +38,7 @@
 \numberwithin{figure}{section}
 \numberwithin{table}{section}
 \graphicspath{{figures/}}
+\renewcommand{\arraystretch}{1.25}   % 全局表格行距稍松
 
 % ---------- TikZ 流程图 ----------
 \usepackage{tikz}
@@ -47,18 +48,25 @@
 \usepackage{enumitem}
 \setlist{itemsep=3pt, topsep=3pt, parsep=0pt}
 
-% ---------- 算法伪代码 ----------
+% ---------- 算法伪代码（中文化） ----------
 \usepackage[ruled, linesnumbered]{algorithm2e}
 \SetAlgorithmName{算法}{算法}{算法列表}
+\SetKwInput{KwIn}{输入}
+\SetKwInput{KwOut}{输出}
+\SetKw{KwRet}{返回}
+\SetKwFor{While}{当}{时执行}{结束}
+\SetKwFor{For}{对于}{执行}{结束}
+\SetKwIF{If}{ElseIf}{Else}{如果}{则}{否则若}{否则}{结束}
 
 % ---------- 链接（电子版建议蓝色，打印版可改为 black） ----------
 \usepackage{url}
 \usepackage{hyperref}
+% 目录 / 内部引用：黑色（不分散阅读注意力）；外部 URL：蓝色（可点提示）
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue!60!black,
-    citecolor=blue!60!black,
-    urlcolor=blue,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue!60!black,
     bookmarksnumbered=true
 }
 
@@ -107,9 +115,9 @@
 
 % ---------- 章节标题（xelatex + ctex 陷阱：heiti 已是粗体，勿再叠加 bfseries） ----------
 \usepackage{titlesec}
-\titleformat{\section}{\heiti\zihao{-3}}{\thesection}{1em}{}
-\titleformat{\subsection}{\heiti\zihao{4}}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\heiti\zihao{-4}}{\thesubsubsection}{1em}{}
+\titleformat{\section}{\heiti\zihao{-2}}{\thesection}{1em}{}
+\titleformat{\subsection}{\heiti\zihao{3}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\heiti\zihao{4}}{\thesubsubsection}{1em}{}
 \titlespacing*{\section}{0pt}{12pt}{6pt}
 \titlespacing*{\subsection}{0pt}{8pt}{4pt}
 \titlespacing*{\subsubsection}{0pt}{6pt}{3pt}
@@ -125,14 +133,18 @@
 % ---------- 页眉页脚 ----------
 \usepackage{fancyhdr}
 \setlength{\headheight}{14pt}
+
+% 让 \section 和 \section* 都能更新页眉标记
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small 2026 西邮校赛数学建模}
-\fancyhead[R]{\small \leftmark}
+\fancyhead[R]{\small \rightmark}
 \fancyfoot[C]{\small \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-% 摘要页使用 plain 样式，保留页码（罗马数字 I）
+% 摘要页 / 目录页：无页眉，只保留页脚页码
 \fancypagestyle{abstractstyle}{%
     \fancyhf{}
     \fancyfoot[C]{\small \thepage}
