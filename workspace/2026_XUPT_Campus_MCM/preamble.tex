@@ -3,17 +3,25 @@
 % 引擎：xelatex    文档类：ctexart（中文）
 % ============================================================
 
+% ---------- 颜色（必须最先加载，供后续宏包引用） ----------
+\usepackage{xcolor}
+\definecolor{accent}{RGB}{30,80,160}    % 主题色：沉稳蓝
+\definecolor{accentlight}{RGB}{225,235,250}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\definecolor{codekw}{rgb}{0.00,0.00,0.70}
+\definecolor{codestr}{rgb}{0.58,0.00,0.00}
+\definecolor{codecom}{rgb}{0.25,0.50,0.35}
+
 % ---------- 页面 ----------
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 
 % ---------- 行距与段距 ----------
-% 国赛通用：1.3 倍行距，段间距清零，首行缩进两字符
-\linespread{1.3}
+\linespread{1.38}                         % 1.38 倍行距（视觉更舒展）
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{2em}
 
 % ---------- 英文主字体（Times New Roman，国赛惯用） ----------
-% Windows 自带 Times New Roman；如为其他系统，xelatex 会自动回退到默认 serif
 \usepackage{fontspec}
 \IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{}
 
@@ -34,11 +42,11 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{float}
-\captionsetup{font=small, labelfont=bf, skip=4pt}
+\captionsetup{font=small, labelfont={bf,color=accent!85!black}, skip=5pt}
 \numberwithin{figure}{section}
 \numberwithin{table}{section}
 \graphicspath{{figures/}}
-\renewcommand{\arraystretch}{1.25}   % 全局表格行距稍松
+\renewcommand{\arraystretch}{1.3}         % 全局表格行距更舒展
 
 % ---------- TikZ 流程图 ----------
 \usepackage{tikz}
@@ -46,7 +54,7 @@
 
 % ---------- 列表（紧凑） ----------
 \usepackage{enumitem}
-\setlist{itemsep=3pt, topsep=3pt, parsep=0pt}
+\setlist{itemsep=4pt, topsep=4pt, parsep=0pt}
 
 % ---------- 算法伪代码（中文化） ----------
 \usepackage[ruled, linesnumbered]{algorithm2e}
@@ -58,10 +66,9 @@
 \SetKwFor{For}{对于}{执行}{结束}
 \SetKwIF{If}{ElseIf}{Else}{如果}{则}{否则若}{否则}{结束}
 
-% ---------- 链接（电子版建议蓝色，打印版可改为 black） ----------
+% ---------- 链接 ----------
 \usepackage{url}
 \usepackage{hyperref}
-% 目录 / 内部引用：黑色（不分散阅读注意力）；外部 URL：蓝色（可点提示）
 \hypersetup{
     colorlinks=true,
     linkcolor=black,
@@ -70,14 +77,8 @@
     bookmarksnumbered=true
 }
 
-% ---------- 代码块（保留原始缩进，等宽对齐） ----------
-\usepackage{xcolor}
+% ---------- 代码块 ----------
 \usepackage{listings}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codebg}{rgb}{0.97,0.97,0.97}
-\definecolor{codekw}{rgb}{0.00,0.00,0.70}
-\definecolor{codestr}{rgb}{0.58,0.00,0.00}
-\definecolor{codecom}{rgb}{0.25,0.50,0.35}
 \lstset{
     backgroundcolor=\color{codebg},
     basicstyle=\ttfamily\footnotesize,
@@ -113,58 +114,87 @@
 \newtheorem{example}{例}[section]
 \newtheorem{remark}{注}[section]
 
-% ---------- 章节标题（xelatex + ctex 陷阱：heiti 已是粗体，勿再叠加 bfseries） ----------
+% ---------- 章节标题（带装饰：section 左竖条 + 底线；subsection 左小色块） ----------
 \usepackage{titlesec}
-\titleformat{\section}{\heiti\zihao{-2}}{\thesection}{1em}{}
-\titleformat{\subsection}{\heiti\zihao{3}}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\heiti\zihao{4}}{\thesubsubsection}{1em}{}
-\titlespacing*{\section}{0pt}{12pt}{6pt}
-\titlespacing*{\subsection}{0pt}{8pt}{4pt}
-\titlespacing*{\subsubsection}{0pt}{6pt}{3pt}
 
-% ---------- 目录（压缩间距，限定到 section，简洁居中标题） ----------
-\setcounter{tocdepth}{1}
-\renewcommand{\contentsname}{\centerline{\heiti\zihao{-2} 目\quad 录}}
+% section：序号前加 4pt 蓝色竖条，主题色标题，下方细横线
+\titleformat{\section}[hang]
+    {\heiti\zihao{-2}\color{accent}}
+    {\makebox[0pt][l]{\color{accent}\rule[-0.15em]{4pt}{1.15em}}\hspace{0.6em}\thesection}
+    {0.6em}{}
+    [{\vspace{-2pt}\noindent\color{accent!55}\rule{\linewidth}{0.5pt}}]
+
+% subsection：序号前加 3pt 小色块
+\titleformat{\subsection}[hang]
+    {\heiti\zihao{3}\color{accent!85!black}}
+    {\makebox[0pt][l]{\color{accent}\rule[0.05em]{3pt}{0.85em}}\hspace{0.5em}\thesubsection}
+    {0.5em}{}
+
+% subsubsection：朴素黑体
+\titleformat{\subsubsection}[hang]
+    {\heiti\zihao{4}}
+    {\thesubsubsection}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+
+% ---------- 目录（section + subsection 两级，精致点线） ----------
+\setcounter{tocdepth}{2}
+\renewcommand{\contentsname}{\texorpdfstring{\centerline{\heiti\zihao{-2}\color{accent} 目\quad 录}}{目 录}}
 \usepackage{titletoc}
-\titlecontents{section}[2em]{\vspace{2pt}\heiti}
-    {\contentslabel{2em}}{\hspace*{-2em}}
-    {\titlerule*[8pt]{.}\contentspage}
 
-% ---------- 页眉页脚 ----------
+% section 条目：黑体、上方留白
+\titlecontents{section}[0em]
+    {\vspace{6pt}\heiti\normalsize}
+    {\contentslabel{1.8em}}
+    {\hspace*{-1.8em}}
+    {\titlerule*[6pt]{.}\contentspage}[\vspace{1pt}]
+
+% subsection 条目：缩进、小字号、细点线
+\titlecontents{subsection}[3.2em]
+    {\vspace{1pt}\small}
+    {\contentslabel{2.8em}}
+    {\hspace*{-2.8em}}
+    {\titlerule*[6pt]{.}\contentspage}
+
+% ---------- 页眉页脚（精致主题色） ----------
 \usepackage{fancyhdr}
-\setlength{\headheight}{14pt}
+\setlength{\headheight}{18pt}
 
-% 让 \section 和 \section* 都能更新页眉标记
 \renewcommand{\sectionmark}[1]{\markright{#1}}
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small 2026 西邮校赛数学建模}
-\fancyhead[R]{\small \rightmark}
-\fancyfoot[C]{\small \thepage}
+\fancyhead[L]{\small\color{accent!70!black} 2026 西邮校赛数学建模}
+\fancyhead[R]{\small\color{accent!70!black} \rightmark}
+\fancyfoot[C]{\small\color{black!70} ---~\thepage~---}
 \renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 
-% 摘要页 / 目录页：无页眉，只保留页脚页码
+% 摘要页 / 目录页：无页眉
 \fancypagestyle{abstractstyle}{%
     \fancyhf{}
-    \fancyfoot[C]{\small \thepage}
+    \fancyfoot[C]{\small\color{black!70} ---~\thepage~---}
     \renewcommand{\headrulewidth}{0pt}
 }
 
 % ---------- 自定义命令 ----------
-% 摘要页标题（居中"摘 要"黑体小二）
+% 摘要页标题（带装饰）
 \newcommand{\abstracttitle}{%
     \begin{center}
-        {\heiti\zihao{-2} 摘\quad 要}
+        \vspace{-0.5em}
+        {\heiti\zihao{-2}\color{accent} 摘\quad 要}\\[4pt]
+        {\color{accent!55}\rule{0.3\linewidth}{0.6pt}}
     \end{center}
-    \vspace{0.5em}
+    \vspace{0.6em}
 }
 
-% 关键词（国赛惯例：分号分隔）
+% 关键词
 \newcommand{\keywords}[1]{%
-    \vspace{1em}
-    \noindent{\heiti 关键词：}\quad #1
+    \vspace{1.2em}
+    \noindent{\heiti\color{accent!85!black} 关键词：}\quad #1
 }
 
-% 封面用下划线填充框（对齐基线，不随字体漂浮）
+% 封面用下划线填充框
 \newcommand{\ulfield}[1]{\underline{\makebox[#1][c]{\ }}}
