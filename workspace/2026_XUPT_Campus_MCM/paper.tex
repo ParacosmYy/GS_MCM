@@ -1,30 +1,25 @@
 % ============================================================
-% 2026 西安邮电大学 校赛数学建模  主文件
-% 编译：xelatex paper.tex && biber paper && xelatex paper.tex && xelatex paper.tex
-% 或在 VSCode 中使用 LaTeX Workshop 的 xelatex x2 配方（保存自动编译）
+% 2026 西安邮电大学 校赛数学建模 主文件
+% 编译：xelatex → biber → xelatex → xelatex
+% 推荐：VSCode + LaTeX Workshop（保存触发 xelatex x2）
 % ============================================================
 \documentclass[a4paper, 12pt]{ctexart}
 
 \input{preamble.tex}
 
-% ---------- 标题信息 ----------
-\title{\textbf{2026 西安邮电大学校赛数学建模\\ \large 题目 X：[题目标题]}}
-\author{参赛队号：\underline{\qquad\qquad\qquad}}
-\date{\today}
-
 \begin{document}
 
-% ---------- 封面 ----------
-\maketitle
-\thispagestyle{empty}
+% ---------- 封面（承诺书） ----------
+\input{sections/00_cover.tex}
 
-% ---------- 摘要（单独一页） ----------
+% ---------- 摘要页 ----------
 \newpage
 \pagenumbering{Roman}
 \input{sections/00_abstract.tex}
 
 % ---------- 目录 ----------
 \newpage
+\renewcommand{\contentsname}{\hfill\heiti\zihao{-2} 目\quad 录 \hfill}
 \tableofcontents
 
 % ---------- 正文 ----------
@@ -32,13 +27,14 @@
 \pagenumbering{arabic}
 
 \input{sections/01_problem.tex}
-\input{sections/02_assumptions.tex}
-\input{sections/03_notation.tex}
-\input{sections/04_model1.tex}
-\input{sections/05_model2.tex}
-\input{sections/06_sensitivity.tex}
-\input{sections/07_evaluation.tex}
-\input{sections/08_conclusion.tex}
+\input{sections/02_analysis.tex}
+\input{sections/03_assumptions.tex}
+\input{sections/04_notation.tex}
+\input{sections/05_model1.tex}
+\input{sections/06_model2.tex}
+\input{sections/07_model3.tex}         % 若只有两题，注释本行
+\input{sections/08_validation.tex}
+\input{sections/09_evaluation.tex}
 
 % ---------- 参考文献 ----------
 \newpage
@@ -47,7 +43,14 @@
 % ---------- 附录 ----------
 \newpage
 \appendix
-\section{程序源代码}
+\section*{附录 A\quad 程序源代码}
+\addcontentsline{toc}{section}{附录 A\quad 程序源代码}
 \lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
+
+% \section*{附录 B\quad 补充数据表}
+% \addcontentsline{toc}{section}{附录 B\quad 补充数据表}
+
+% \section*{附录 C\quad 补充证明}
+% \addcontentsline{toc}{section}{附录 C\quad 补充证明}
 
 \end{document}
