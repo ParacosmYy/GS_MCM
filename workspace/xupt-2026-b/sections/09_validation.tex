@@ -62,3 +62,18 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
 \end{table}
 
 窗口从 51 增至 151 时任务数从 1 增至 24，表明平滑程度显著影响可行窗口分布。窗口 101--151 为推荐工作区间，兼顾噪声抑制与轨迹形变控制。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{figures/sensitivity_noise.png}
+    \includegraphics[width=0.48\textwidth]{figures/sensitivity_sg_window.png}
+    \caption{灵敏度分析：噪声水平（左）与 SG 窗口大小（右）对模型的影响}
+    \label{fig:sensitivity}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/fig_results_radar.png}
+    \caption{三类方法综合性能雷达图（五维度评价）}
+    \label{fig:radar}
+\end{figure}

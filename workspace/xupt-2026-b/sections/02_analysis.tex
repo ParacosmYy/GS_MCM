@@ -1,5 +1,19 @@
 \section{问题分析}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/fig_method_flowchart.png}
+    \caption{本文方法论流程：四问递进结构与数据流}
+    \label{fig:method_flow}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/fig_noise_heatmap.png}
+    \caption{三份附件噪声水平热力图（二阶差分估计 $\sigma$，单位 m）}
+    \label{fig:noise_heat}
+\end{figure}
+
 \subsection{问题一的分析}
 问题一本质是\textbf{一维参数估计}问题：两路无噪声轨迹完全相同，仅存在时间轴平移 $\Delta\tau$。由于无噪声，残差平方和在真值处为零，可利用三次样条保持轨迹光滑性后做高精度一维搜索。
 
