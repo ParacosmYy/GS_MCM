@@ -8,6 +8,39 @@
 
 \textbf{方法选型对比}：动态时间规整（DTW）\cite{sakoe1978} 是时间序列对齐的经典方法，但其时间复杂度为 $O(N^2)$，且离散路径对齐无法达到亚采样精度（最高精度仍为 $0.1$\,s）。互相关法虽可快速实现（FFT 加速为 $O(N\log N)$），但需均匀采样且对非周期信号的峰值定位鲁棒性差。本文采用\textbf{三次样条插值 + 黄金分割搜索}：样条插值将离散轨迹延拓为连续函数，保持 $C^2$ 光滑性；黄金分割法在 $[-50,50]$\,s 区间上搜索残差平方和最小点，时间复杂度 $O(N\log(1/\epsilon))$，可达 $10^{-6}$\,s 量级精度。该方案兼顾高精度与低计算量。
 
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[xscale=0.9, yscale=0.7]
+        % 坐标轴
+        \draw[-Stealth, thick] (-0.3,0) -- (8.5,0) node[right] {$t$};
+        \draw[-Stealth, thick] (0,-0.3) -- (0,3.5) node[above] {$x(t)$};
+
+        % 方式1轨迹（蓝色实线）
+        \draw[thick, black] plot[smooth, tension=0.6] coordinates
+            {(0.5,0.8) (1.5,2.2) (2.5,2.8) (3.5,1.5) (4.5,0.6) (5.5,1.8) (6.5,2.5) (7.5,1.2)};
+        \node[font=\small] at (7.8,1.6) {$S_1(t)$};
+
+        % 方式2轨迹（灰色虚线，偏移 Δτ）
+        \draw[thick, black!50, dashed] plot[smooth, tension=0.6] coordinates
+            {(2.2,0.8) (3.2,2.2) (4.2,2.8) (5.2,1.5) (6.2,0.6) (7.2,1.8) (8.0,2.3)};
+        \node[font=\small, black!50] at (8.3,2.6) {$S_2(t)$};
+
+        % Δτ 标注
+        \draw[<->, thick] (0.5,-0.5) -- (2.2,-0.5) node[midway, below, font=\small] {$\Delta\tau$};
+
+        % 残差标注
+        \draw[<->, thin, black!60] (3.5,1.5) -- (3.5,2.65) node[midway, right, font=\footnotesize] {残差};
+
+        % 最优点标注
+        \node[fill=black, circle, inner sep=1.5pt] at (3.5,1.5) {};
+
+        % 说明文字
+        \node[font=\footnotesize, align=left] at (4.5,-1.2) {目标：$\min_{\Delta\tau} \sum \|S_1(t) - S_2(t-\Delta\tau)\|^2$};
+    \end{tikzpicture}
+    \caption{问题一时间对齐原理：通过平移 $\Delta\tau$ 使两路样条轨迹残差最小}
+    \label{fig:q1_schematic}
+\end{figure}
+
 \subsection{问题二的分析}
 
 问题二在时间偏差基础上新增\textbf{空间系统偏差}和\textbf{随机噪声}，数学本质变为\textbf{三参数联合估计 + 状态滤波}问题。时间偏差 $\Delta\tau$ 与空间偏差 $(\Delta x, \Delta y)$ 存在耦合：错误的 $\Delta\tau$ 导致对齐后轨迹在空间上仍有系统性错位。此外，两种测量方式的观测时刻不同步，需在融合前完成时间配准。
@@ -16,6 +49,43 @@
 
 \textbf{方法选型对比}：分步法（先估 $\Delta\tau$ 再估空间偏差）存在误差传播风险——$\Delta\tau$ 估计偏差会污染后续空间偏差估计。本文采用\textbf{联合最小二乘估计}：构造目标函数 $J(\Delta\tau, \Delta x, \Delta y) = \sum \|\boldsymbol{p}_1(t + \Delta\tau) - \boldsymbol{p}_2(t) - \Delta\boldsymbol{p}\|^2$，通过网格搜索 + 梯度优化求解，避免累积误差。噪声抑制方面，观测模型为线性（$\boldsymbol{z}_k = H\boldsymbol{x}_k + \boldsymbol{v}_k$，其中 $H=[I,0]$），卡尔曼滤波（KF）\cite{welch2006} 在线性高斯系统下已为最优估计器，引入扩展卡尔曼滤波（EKF）或粒子滤波（PF）无增益反而增加计算量。异步融合采用多传感器信息融合理论 \cite{hall1997}，按时间戳排序后串行更新状态。
 
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[node distance=0.7cm and 1.8cm,
+        box/.style={rectangle, draw=black, thick, fill=black!5, minimum width=5em, minimum height=2em, align=center, font=\small, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
+        io/.style={trapezium, trapezium left angle=75, trapezium right angle=105, draw=black!70, thick, minimum width=4.5em, minimum height=1.6em, align=center, font=\footnotesize}]
+
+        % 输入
+        \node[io] (z1) {方式1\\4\,Hz};
+        \node[io, below=0.5cm of z1] (z2) {方式2\\5\,Hz};
+
+        % 联合估计
+        \node[box, right=of z1, yshift=-0.6cm] (est) {联合估计\\$(\Delta\tau,\Delta x,\Delta y)$};
+
+        % 偏差校正
+        \node[box, right=of est] (corr) {偏差校正\\时间+空间};
+
+        % KF
+        \node[box, right=of corr] (kf) {异步 KF\\6 维状态};
+
+        % 输出
+        \node[io, right=of kf] (out) {10\,Hz\\融合轨迹};
+
+        % 连线
+        \draw[arrow] (z1.east) -- ++(0.3,0) |- (est.west);
+        \draw[arrow] (z2.east) -- ++(0.3,0) |- (est.west);
+        \draw[arrow] (est) -- (corr);
+        \draw[arrow] (corr) -- (kf);
+        \draw[arrow] (kf) -- (out);
+
+        % 参数标注
+        \node[font=\tiny, above=0.1cm of est] {Nelder-Mead};
+        \node[font=\tiny, above=0.1cm of kf] {$q_a=8$\,m/s$^2$};
+    \end{tikzpicture}
+    \caption{问题二数据融合流水线：联合估计 $\to$ 偏差校正 $\to$ 卡尔曼滤波}
+    \label{fig:q2_pipeline}
+\end{figure}
+
 \subsection{问题三的分析}
 
 问题三的数学本质是\textbf{模型选择}问题：判断真实数据是否存在系统偏差。形式化为假设检验（$H_0$: 无系统偏差 vs $H_1$: 有系统偏差）。直接比较残差平方和可能受噪声干扰，需构造统计量并设定显著性水平。
@@ -23,6 +93,33 @@
 \textbf{难点}在于：(1) Bootstrap 协方差估计计算量大（需重采样 $10^3$ 次以上）；(2) 单一检验准则可能因样本量、模型复杂度惩罚权重等因素产生偏倚。
 
 \textbf{方法选型对比}：单独使用 Wald 检验 \cite{wald1943} 对样本量敏感（小样本下 $\chi^2$ 近似失效），单独使用 AIC \cite{akaike1974} 对模型复杂度惩罚因子 $k$ 敏感（AIC 倾向选择更复杂模型）。本文采用\textbf{Wald 检验 + AIC 双判据}：Wald 检验构造统计量 $W = \hat{\boldsymbol{\theta}}^\top \text{Cov}(\hat{\boldsymbol{\theta}})^{-1} \hat{\boldsymbol{\theta}}$，在 $H_0$ 下服从 $\chi^2(2)$ 分布；AIC 比较有偏模型与无偏模型的信息损失 $\Delta \text{AIC} = 2\Delta k - 2\Delta \ln L$。双判据交叉验证：仅当 Wald 检验拒绝 $H_0$（$p<0.05$）且 $\Delta \text{AIC} > 2$（强支持有偏模型）时才判定存在系统偏差，提升判别鲁棒性。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[node distance=0.8cm and 1.5cm,
+        proc/.style={rectangle, draw=black, thick, fill=black!5, minimum width=7em, minimum height=2em, align=center, font=\small, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
+        dec/.style={diamond, draw=black, thick, aspect=2.2, minimum width=6em, align=center, font=\small, inner sep=1pt},
+        res/.style={rectangle, rounded corners=0.6em, draw=black, thick, fill=black!10, minimum width=6em, minimum height=1.8em, align=center, font=\small\bfseries}]
+
+        % 节点
+        \node[proc] (est) {联合估计\\$(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$};
+        \node[proc, below=of est] (boot) {Bootstrap\\协方差 $\hat{\Sigma}$};
+        \node[dec, below=1cm of boot] (wald) {Wald\\$p < 0.05$?};
+        \node[dec, right=2cm of wald] (aic) {$\Delta$AIC\\$> 2$?};
+        \node[res, below=1cm of wald] (h0) {$H_0$：无偏差\\零偏模型融合};
+        \node[res, below=1cm of aic] (h1) {$H_1$：有偏差\\带偏模型融合};
+
+        % 连线
+        \draw[arrow] (est) -- (boot);
+        \draw[arrow] (boot) -- (wald);
+        \draw[arrow] (wald) -- node[left, font=\footnotesize]{否} (h0);
+        \draw[arrow] (wald) -- node[above, font=\footnotesize]{是} (aic);
+        \draw[arrow] (aic) -- node[right, font=\footnotesize]{是} (h1);
+        \draw[arrow] (aic.south) -- ++(0,-0.3) -| node[pos=0.25, below, font=\footnotesize]{否} (h0.east);
+    \end{tikzpicture}
+    \caption{问题三偏差判定流程：Wald 检验与 AIC 双判据级联决策}
+    \label{fig:q3_decision}
+\end{figure}
 
 \subsection{问题四的分析}
 
