@@ -1,80 +1,63 @@
-\section{问题一的建立与求解}
+\section{问题一的模型建立与求解}\label{sec:model1}
 
 \subsection{模型建立}
-基于前述假设，将问题一形式化为如下优化模型：
+
+设方式1的位置观测为 $\{(t_k^{(1)}, x_k^{(1)}, y_k^{(1)})\}_{k=1}^{N_1}$（4\,Hz），方式2为 $\{(t_j^{(2)}, x_j^{(2)}, y_j^{(2)})\}_{j=1}^{N_2}$（5\,Hz）。附件1无噪声，两路观测同一真实轨迹 $\boldsymbol{p}(t)$，仅存在设备开机时间偏差 $\Delta\tau$：
 \begin{equation}
-    \min_{x \in \mathbb{R}^n} f(x)
-    \quad \text{s.t.} \quad
-    g_i(x) \le 0,\; i = 1, \dots, m
-    \label{eq:model1}
+    t_{\text{real}}^{(2)} = t^{(2)}_{\text{stamp}} + \Delta\tau
+    \label{eq:time_offset}
 \end{equation}
-其中 $f(x)$ 为目标函数，$g_i(x)$ 为约束条件。
+
+对两路分别建三次样条插值 $S_1(t)$、$S_2(t)$，则在对齐后公共时段 $\mathcal{T} = [t_{\max}, t_{\min}]$ 上，最小化残差平方和：
+\begin{equation}
+    \Delta\tau^* = \arg\min_{\Delta\tau} \sum_{t_k \in \mathcal{T}} \left\| S_1(t_k) - S_2(t_k - \Delta\tau) \right\|^2
+    \label{eq:p1_obj}
+\end{equation}
 
 \subsection{算法设计}
-采用 XXXX 算法求解式~\eqref{eq:model1}。伪代码见算法~\ref{alg:solve1}，直观流程见图~\ref{fig:flow1}。
+
+采用\textbf{粗搜+精搜}两阶段策略：
+\begin{enumerate}
+    \item \textbf{粗搜}：在 $\Delta\tau \in [\Delta\tau_0 - 50, \Delta\tau_0 + 50]$（步长 0.1\,s）上枚举，取 $J$ 最小者为初始值。其中 $\Delta\tau_0 = t_1^{(1)}_{\text{start}} - t_1^{(2)}_{\text{start}}$。
+    \item \textbf{精搜}：在粗搜最优 $\pm 1$\,s 范围内用 \texttt{scipy.optimize.minimize\_scalar}（bounded 方法，精度 $10^{-6}$\,s）细化。
+\end{enumerate}
+
+对齐完成后，10\,Hz 联合轨迹取两路样条均值（无噪声时两路重合）：
+\begin{equation}
+    \hat{\boldsymbol{p}}(t_k) = \frac{S_1(t_k) + S_2(t_k - \Delta\tau^*)}{2}, \quad t_k = t_0 + 0.1k
+\end{equation}
 
 \begin{algorithm}[H]
-    \caption{问题一求解算法}
+    \caption{问题一：时间对齐算法}
     \label{alg:solve1}
-    \KwIn{数据 $\mathcal{D}$、初始参数 $\theta_0$}
-    \KwOut{最优解 $x^*$}
-    初始化 $x \leftarrow x_0$\;
-    \While{未收敛}{
-        依据 XXXX 规则更新 $x$\;
-        评估目标函数 $f(x)$\;
+    \KwIn{两路观测 $\mathcal{D}_1, \mathcal{D}_2$}
+    \KwOut{$\Delta\tau^*$, 10\,Hz 轨迹}
+    分别建三次样条 $S_1, S_2$\;
+    $\Delta\tau_0 \leftarrow t^{(1)}_{\text{start}} - t^{(2)}_{\text{start}}$\;
+    \For{$\Delta\tau \in [\Delta\tau_0 - 50, \Delta\tau_0 + 50]$, step 0.1}{
+        计算 $J(\Delta\tau)$，记录最小值\;
     }
-    \Return{$x^* = x$}\;
+    在最优 $\pm 1$\,s 内精搜 $\Delta\tau^*$\;
+    在 10\,Hz 网格上输出均值轨迹\;
+    \Return{$\Delta\tau^*$, 轨迹}\;
 \end{algorithm}
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[node distance=0.8cm and 1.2cm]
-        \node[terminal]                              (s)  {开始};
-        \node[ionode,   below=of s]                  (in) {读入数据 $\mathcal{D}$};
-        \node[procbox,  below=of in]                 (i)  {初始化 $x \leftarrow x_0$};
-        \node[procbox,  below=of i]                  (u)  {依据 XXX 规则更新 $x$};
-        \node[procbox,  below=of u]                  (e)  {计算 $f(x)$};
-        \node[decision, below=of e, yshift=-0.2cm]   (c)  {是否收敛？};
-        \node[ionode,   below=of c, yshift=-0.2cm]   (o)  {输出 $x^*$};
-        \node[terminal, below=of o]                  (end){结束};
-
-        \draw[arrow] (s)  -- (in);
-        \draw[arrow] (in) -- (i);
-        \draw[arrow] (i)  -- (u);
-        \draw[arrow] (u)  -- (e);
-        \draw[arrow] (e)  -- (c);
-        \draw[arrow] (c)  -- node[right, font=\small]{是} (o);
-        \draw[arrow] (o)  -- (end);
-        % 否 → 回到更新步
-        \draw[arrow] (c.east) -- ++(2,0) node[above, font=\small, pos=0.5]{否}
-                              |- (u.east);
-    \end{tikzpicture}
-    \caption{问题一求解流程图}
-    \label{fig:flow1}
-\end{figure}
-
 \subsection{结果与分析}
-求解结果如表~\ref{tab:result1} 所示，结果表明 XXXX。
 
 \begin{table}[H]
     \centering
-    \caption{问题一数值结果（示例占位，按需替换）}
+    \caption{问题一求解结果}
     \label{tab:result1}
-    \begin{tabular}{@{}ccc@{}}
+    \begin{tabular}{@{}lrl@{}}
         \toprule
-        参数 & 数值 & 说明 \\
+        指标 & 数值 & 说明 \\
         \midrule
-        $x_1^*$ & -- & 最优决策变量 1 \\
-        $x_2^*$ & -- & 最优决策变量 2 \\
-        $f^*$   & -- & 最优目标值 \\
+        $\Delta\tau^*$ & $-198.4317$\,s & 方式2时间戳 + $\Delta\tau$ = 真实时间 \\
+        对齐 RMSE & $8.39 \times 10^{-11}$\,m & 无噪声理论应为 $\sim 0$ \\
+        公共时段长度 & 700.35\,s & $[270.4, 970.75]$ \\
+        10\,Hz 轨迹点数 & 7004 & \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-% 图占位：需要时取消下列注释并放入 figures/result1.png
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.7\textwidth]{result1.png}
-%     \caption{问题一求解结果}
-%     \label{fig:result1}
-% \end{figure}
+RMSE 达到 $10^{-11}$ 量级，验证了附件1确实无噪声，且三次样条 + 一维搜索方法能精确恢复时间偏差。算法复杂度为 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），远优于 DTW 的 $O(N^2)$。

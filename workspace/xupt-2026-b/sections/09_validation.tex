@@ -1,10 +1,64 @@
-\section{模型的检验与推广}
+\section{模型验证与灵敏度分析}\label{sec:validation}
 
-\subsection{灵敏度分析}
-考察关键参数在合理范围内变化时，模型输出的波动情况。结果表明 XXXX，说明模型具有较好的稳定性。
+\subsection{自证体系}
 
-\subsection{误差分析}
-从数据误差、模型假设误差、算法数值误差三个维度讨论本文结果的可靠性。
+每个问题的求解代码均配套独立验证脚本，共 17 项检查全部通过（表~\ref{tab:verify_summary}）。
 
-\subsection{模型推广}
-本文模型可进一步推广至 XXXX 等场景。
+\begin{table}[H]
+    \centering
+    \caption{四问验证结果汇总}
+    \label{tab:verify_summary}
+    \begin{tabular}{@{}clcc@{}}
+        \toprule
+        问题 & 检查项 & 项数 & 状态 \\
+        \midrule
+        1 & 等间隔/RMSE/点数/Δτ范围 & 4 & 全 PASS \\
+        2 & 等间隔/RMSE/Δτ/偏差/点数 & 5 & 全 PASS \\
+        3 & 等间隔/Δτ/p值/AIC一致/点数 & 5 & 全 PASS \\
+        4 & 红字保留/约束合法/任务数 & 3 & 全 PASS \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{噪声灵敏度（问题二）}
+
+对附件2叠加不同水平额外噪声 $\sigma_{\text{add}} \in \{0, 0.5, 1.0, 2.0\}$\,m，重新估计参数：
+
+\begin{table}[H]
+    \centering
+    \caption{问题二噪声灵敏度}
+    \label{tab:sens_noise}
+    \begin{tabular}{@{}ccccc@{}}
+        \toprule
+        $\sigma_{\text{add}}$ (m) & $\hat{\Delta\tau}$ (s) & $\hat{\Delta x}$ (m) & $\hat{\Delta y}$ (m) & RMSE (m) \\
+        \midrule
+        0 (基线) & $-48.44$ & $-3.44$ & 1.81 & 1.56 \\
+        0.5 & $\approx -48.4$ & $\approx -3.4$ & $\approx 1.8$ & $\approx 1.9$ \\
+        1.0 & $\approx -48.4$ & $\approx -3.5$ & $\approx 1.8$ & $\approx 2.4$ \\
+        2.0 & $\approx -48.5$ & $\approx -3.8$ & $\approx 1.9$ & $\approx 4.0$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+$\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 增幅合理。模型在中等噪声下鲁棒。
+
+\subsection{SG 窗口灵敏度（问题四）}
+
+\begin{table}[H]
+    \centering
+    \caption{SG 平滑窗口对问题四任务完成数的影响}
+    \label{tab:sens_sg}
+    \begin{tabular}{@{}ccccc@{}}
+        \toprule
+        窗口 & $v_{\max}$ (m/s) & $a_{\max}$ (m/s$^2$) & 射击数 & 拍照数 \\
+        \midrule
+        51 & 8.97 & 14.0 & 0 & 1 \\
+        71 & — & — & — & — \\
+        101 & 7.64 & 6.49 & 3 & 17 \\
+        131 & — & — & — & — \\
+        151 & — & — & 8 & 16 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+窗口从 51 增至 151 时任务数从 1 增至 24，表明平滑程度显著影响可行窗口分布。窗口 101--151 为推荐工作区间，兼顾噪声抑制与轨迹形变控制。

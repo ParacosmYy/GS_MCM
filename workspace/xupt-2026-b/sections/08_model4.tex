@@ -1,17 +1,54 @@
-% ============================================================
-% 问题 4：任务规划（射击 + 拍照）的优化模型与求解
-% 内容在建模完成后填充：MILP + CP-SAT 双求解器 + 贪心基线
-% ============================================================
 \section{问题四的模型建立与求解}\label{sec:model4}
 
-\subsection{模型建立}\label{subsec:model4_build}
+\subsection{模型建立}
 
-% 待填充：任务决策变量定义、可行窗约束、目标函数、时序不冲突约束
+机器人沿问题三输出的 10\,Hz 融合轨迹运动，需在沿途对目标点执行射击或拍照任务。
 
-\subsection{模型求解}\label{subsec:model4_solve}
+\textbf{轨迹预处理}：对 KF 融合轨迹施加 Savitzky-Golay 滤波（窗口 101 点 = 10\,s，3 阶多项式），消除观测噪声对速度/加速度微分的放大效应，再用中心差分计算 $v(t), a(t)$。
 
-% 待填充：贪心基线 + CP-SAT + CBC 三路对比表、求解时间、最终得分
+\textbf{约束}：
+\begin{itemize}
+    \item \textbf{射击}：$d \in [5, 30]$\,m，$v \le 2$\,m/s，$a \le 1.5$\,m/s$^2$，准备时长 1.5\,s，命中率 85\%
+    \item \textbf{拍照}：$d \in [10, 40]$\,m，$v \le 1.5$\,m/s，$a \le 1.5$\,m/s$^2$，准备时长 0.5\,s，同目标两次方向角差 $\ge 60^\circ$
+\end{itemize}
 
-\subsection{结果分析}\label{subsec:model4_result}
+\textbf{可行时刻}：时刻 $t$ 对目标 $j$ 可行当且仅当在整个准备窗口 $[t - \Delta_{\text{prep}}, t]$ 内所有约束持续满足。
 
-% 待填充：result.xlsx 输出摘要、命中率计算、拍照角度覆盖分析
+\textbf{目标函数}：
+\begin{equation}
+    \max \sum_{i} \mathbb{1}[\text{任务 } i \text{ 被执行}]
+\end{equation}
+约束：任意两任务时间窗不重叠；射击每目标至多 1 次；拍照同目标多次执行需满足角差约束。
+
+\subsection{模型求解}
+
+采用\textbf{贪心启发式}策略：
+\begin{enumerate}
+    \item 遍历所有目标 $\times$ 所有可行时刻，生成候选列表
+    \item 按执行时刻排序
+    \item 顺序扫描：若当前候选不与已选任务时间冲突，且满足射击唯一/拍照角差约束，则选入
+\end{enumerate}
+
+求解时间 1.2\,s，远低于 2\,min 预算上限。
+
+\subsection{结果分析}
+
+\begin{table}[H]
+    \centering
+    \caption{问题四任务规划结果}
+    \label{tab:result4}
+    \begin{tabular}{@{}lr@{}}
+        \toprule
+        指标 & 数值 \\
+        \midrule
+        射击完成目标数 & 3 / 18 \\
+        拍照完成次数 & 17 \\
+        总任务数 & 20 \\
+        求解时间 & 1.2\,s \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+射击完成率较低的原因：轨迹速度中位数 2.53\,m/s，仅约 37.5\% 时刻满足 $v \le 2$\,m/s 的硬约束（SG 窗口 101 条件下），而同时满足距离约束 $d \in [5, 30]$\,m 的时刻进一步减少。拍照约束相对宽松（$v \le 1.5$\,m/s 但准备时长仅 0.5\,s），可行窗更多。
+
+完整任务计划已写入 \texttt{output/result\_v1.xlsx}，格式与题目 \texttt{result.xlsx} 模板一致，红字内容 100\% 保留（17 个单元格逐坐标核验通过）。

@@ -1,14 +1,49 @@
-\section{问题二的建立与求解}
+\section{问题二的模型建立与求解}\label{sec:model2}
 
 \subsection{模型建立}
-在问题一基础上，进一步考虑 XXXX 因素，建立如下模型：
+
+附件2含随机噪声及固定系统偏差。以方式1为绝对参考系，方式2的观测模型为：
 \begin{equation}
-    \text{待填写}
-    \label{eq:model2}
+    \boldsymbol{z}_2(t) = \boldsymbol{p}(t - \Delta\tau) + \begin{pmatrix} \Delta x \\ \Delta y \end{pmatrix} + \boldsymbol{\varepsilon}_2, \quad \boldsymbol{\varepsilon}_2 \sim \mathcal{N}(\boldsymbol{0}, \sigma_2^2 \boldsymbol{I})
 \end{equation}
 
-\subsection{算法设计}
-针对问题二的求解方法，简述要点。
+联合估计 $(\Delta\tau, \Delta x, \Delta y)$ 的目标函数：
+\begin{equation}
+    (\Delta\tau^*, \Delta x^*, \Delta y^*) = \arg\min \sum_{t_k \in \mathcal{T}} \left\| S_1(t_k) - \left[ S_2(t_k - \Delta\tau) + (\Delta x, \Delta y)^\top \right] \right\|^2
+    \label{eq:p2_joint}
+\end{equation}
+
+求解采用 Nelder-Mead 法（初始值由粗搜获得）。
+
+\subsection{卡尔曼融合}
+
+对齐后采用\textbf{常加速度模型}异步卡尔曼滤波。状态向量：
+\begin{equation}
+    \boldsymbol{x}_k = (p_x, p_y, v_x, v_y, a_x, a_y)^\top
+\end{equation}
+
+状态转移矩阵 $\boldsymbol{F}(\Delta t)$ 为标准常加速度形式；过程噪声 $\boldsymbol{Q}$ 由加速度抖动强度 $q_a$ 参数化。两路观测按时间戳排序后异步更新，观测矩阵 $\boldsymbol{H} = [\boldsymbol{I}_2, \boldsymbol{0}_{2\times 4}]$。
+
+方式2的观测在更新前先校正偏差：$\tilde{\boldsymbol{z}}_2 = \boldsymbol{z}_2 - (\Delta x^*, \Delta y^*)^\top$。
 
 \subsection{结果与分析}
-给出求解结果、数值对比与讨论。
+
+\begin{table}[H]
+    \centering
+    \caption{问题二求解结果}
+    \label{tab:result2}
+    \begin{tabular}{@{}lrl@{}}
+        \toprule
+        指标 & 数值 & 说明 \\
+        \midrule
+        $\Delta\tau^*$ & $-48.4413$\,s & 时间偏差 \\
+        $\Delta x^*$ & $-3.4353$\,m & 系统偏差（X 方向）\\
+        $\Delta y^*$ & $1.8061$\,m & 系统偏差（Y 方向）\\
+        对齐 RMSE & $1.5646$\,m & 含噪声合理值 \\
+        估计噪声 $\hat\sigma$ & $1.1062$\,m & 与 EDA 吻合 \\
+        10\,Hz 轨迹点数 & 8513 & \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+联合估计避免了"先估 $\Delta\tau$ 再估 $(\Delta x, \Delta y)$"的误差累积效应。KF 融合利用了两路互补的时间分辨率（4\,Hz + 5\,Hz $\to$ 等效 9\,Hz 采样密度），输出 10\,Hz 平滑轨迹。

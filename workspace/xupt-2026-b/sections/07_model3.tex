@@ -1,10 +1,46 @@
-\section{问题三的建立与求解}
+\section{问题三的模型建立与求解}\label{sec:model3}
 
-\subsection{模型建立}
-待填写。
+\subsection{系统偏差存在性检验}
 
-\subsection{算法设计}
-待填写。
+附件3为真实测量数据，需判断是否存在系统偏差。采用\textbf{双判据}策略：
 
-\subsection{结果与分析}
-待填写。
+\textbf{（1）Wald 检验}。在联合估计框架下估得 $(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$ 及其 Bootstrap 协方差 $\hat{\boldsymbol{\Sigma}}$，构造统计量：
+\begin{equation}
+    W = (\hat{\Delta x}, \hat{\Delta y}) \hat{\boldsymbol{\Sigma}}^{-1} (\hat{\Delta x}, \hat{\Delta y})^\top \sim \chi^2(2)
+\end{equation}
+
+\textbf{（2）AIC 对比}。比较零偏模型（仅含 $\Delta\tau$，1 参数）与带偏模型（含 $\Delta\tau, \Delta x, \Delta y$，3 参数）：
+\begin{equation}
+    \text{AIC} = n \ln(\text{SSE}/n) + 2k
+\end{equation}
+
+判决规则：当 Wald $p < 0.05$ \textbf{且} $\Delta\text{AIC} > 2$ 时接受 H$_1$（有偏差），否则接受 H$_0$。
+
+\subsection{检验结果}
+
+\begin{table}[H]
+    \centering
+    \caption{问题三偏差检验结果}
+    \label{tab:p3_test}
+    \begin{tabular}{@{}lrl@{}}
+        \toprule
+        指标 & 数值 & 判定 \\
+        \midrule
+        $\hat{\Delta\tau}$ & $367.8659$\,s & — \\
+        $\hat{\Delta x}$ & $0.0883$\,m & 极小 \\
+        $\hat{\Delta y}$ & $0.2959$\,m & 极小 \\
+        Wald $W$ & 2.0659 & $p = 0.356 > 0.05$ \\
+        $\Delta$AIC & $-2.81$ & $< 2$ \\
+        \midrule
+        \textbf{判决} & \multicolumn{2}{l}{\textbf{H$_0$：无显著系统偏差}} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+两路数据在空间上无固定偏移，仅存在时间偏差 $\Delta\tau \approx 367.87$\,s。
+
+\subsection{KF 融合与输出}
+
+按零偏模型执行卡尔曼滤波融合（同问题二流程，但 $\Delta x = \Delta y = 0$）。融合参数根据 EDA 估计噪声调整：$\sigma_1 \approx 4.18$\,m，$\sigma_2 \approx 2.89$\,m，过程噪声 $q_a = 8$\,m/s$^2$。
+
+输出 10\,Hz 轨迹 \textbf{3691 点}（时长 369.0\,s），作为问题四的输入。

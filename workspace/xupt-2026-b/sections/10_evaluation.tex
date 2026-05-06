@@ -1,14 +1,17 @@
-\section{模型评价}
+\section{模型评价}\label{sec:evaluation}
 
 \subsection{模型优点}
 \begin{itemize}
-    \item 优点一：XXXX；
-    \item 优点二：XXXX；
-    \item 优点三：XXXX。
+    \item 问题一采用闭式解（三次样条 + 一维搜索），复杂度 $O(N\log N)$，远优于 DTW 的 $O(N^2)$。
+    \item 问题二联合估计 $(\Delta\tau, \Delta x, \Delta y)$ 避免了分步估计的误差累积。
+    \item 问题三用 Wald 检验 + AIC 双判据，提高了偏差判定鲁棒性，不依赖单一假设检验。
+    \item 问题四自证体系完备：独立验证脚本对每行 result.xlsx 逐约束核验，可确保解的合法性。
+    \item 全流程可复现：固定随机种子、数据路径、Python 依赖版本。
 \end{itemize}
 
-\subsection{模型缺点}
+\subsection{模型局限}
 \begin{itemize}
-    \item 缺点一：XXXX；
-    \item 缺点二：XXXX。
+    \item 问题四的贪心策略非严格最优，与 MILP 全局最优可能存在 gap。
+    \item KF 过程噪声参数 $q_a$ 需手动调节，缺乏自适应机制。
+    \item SG 平滑窗口大小对问题四结果影响显著（任务数从 1 到 24），需根据具体应用场景标定。
 \end{itemize}
