@@ -22,15 +22,15 @@
 
 \textbf{难点}在于：(1) Bootstrap 协方差估计计算量大（需重采样 $10^3$ 次以上）；(2) 单一检验准则可能因样本量、模型复杂度惩罚权重等因素产生偏倚。
 
-\textbf{方法选型对比}：单独使用 Wald 检验 \cite{wald1943} 对样本量敏感（小样本下 $\chi^2$ 近似失效），单独使用 AIC \cite{akaike1974} 对模型复杂度惩罚因子 $k$ 敏感（AIC 倾向选择更复杂模型）。本文采用\textbf{Wald 检验 + AIC 双判据}：Wald 检验构造统计量 $W = \hat{\boldsymbol{\theta}}^\top \text{Cov}(\hat{\boldsymbol{\theta}})^{-1} \hat{\boldsymbol{\theta}}$，在 $H_0$ 下服从 $\chi^2(2)$ 分布；AIC 比较有偏模型与无偏模型的信息损失 $\Delta \text{AIC} = 2\Delta k - 2\Delta \ln L$。双判据交叉验证：仅当 Wald 检验拒绝 $H_0$（$p<0.05$）且 $\Delta \text{AIC} > 10$（强支持有偏模型）时才判定存在系统偏差，提升判别鲁棒性。
+\textbf{方法选型对比}：单独使用 Wald 检验 \cite{wald1943} 对样本量敏感（小样本下 $\chi^2$ 近似失效），单独使用 AIC \cite{akaike1974} 对模型复杂度惩罚因子 $k$ 敏感（AIC 倾向选择更复杂模型）。本文采用\textbf{Wald 检验 + AIC 双判据}：Wald 检验构造统计量 $W = \hat{\boldsymbol{\theta}}^\top \text{Cov}(\hat{\boldsymbol{\theta}})^{-1} \hat{\boldsymbol{\theta}}$，在 $H_0$ 下服从 $\chi^2(2)$ 分布；AIC 比较有偏模型与无偏模型的信息损失 $\Delta \text{AIC} = 2\Delta k - 2\Delta \ln L$。双判据交叉验证：仅当 Wald 检验拒绝 $H_0$（$p<0.05$）且 $\Delta \text{AIC} > 2$（强支持有偏模型）时才判定存在系统偏差，提升判别鲁棒性。
 
 \subsection{问题四的分析}
 
-问题四是\textbf{带约束的组合优化}问题：在固定轨迹上选择时刻执行 7 个任务，约束包括距离/速度/加速度硬阈值、任务准备时长窗口、角差限制和时序不冲突（任务间间隔 $\geq 10$\,s）。一般情况下该问题为 NP-hard \cite{papadimitriou1998}（类似于带时序约束的调度问题）。
+问题四是\textbf{带约束的组合优化}问题：在固定轨迹上选择时刻对 36 个目标（18射击+18拍照）执行任务，约束包括距离/速度/加速度硬阈值、任务准备时长窗口、角差限制和时序不冲突（任务间间隔 $\geq 10$\,s）。一般情况下该问题为 NP-hard \cite{papadimitriou1998}（类似于带时序约束的调度问题）。
 
 \textbf{难点}在于：(1) 噪声轨迹微分放大（一阶导数噪声放大 $\sqrt{2}/\Delta t$，二阶导数放大更剧烈）；(2) 可行时间窗稀疏且不均匀分布；(3) 时序不冲突约束耦合所有决策变量。
 
-\textbf{方法选型对比}：混合整数线性规划（MILP）可求全局最优解，但变量规模过大（以 $2$\,Hz 网格离散化，$T=600$\,s 对应 $1200$ 时间点 $\times 7$ 任务 $\times 12$ 硬约束 $\approx 10^5$ 个约束），使用 CBC/Gurobi 求解器超时风险大（预试验显示超过 300\,s 仍未收敛）。本文采用\textbf{Savitzky-Golay（SG）滤波 + 贪心优化}：SG 滤波通过局部多项式拟合平滑轨迹，同时保持峰值特征（窗口长度 $w=11$，多项式阶数 $d=3$），噪声衰减 $\sigma_{\text{out}} \approx \sigma_{\text{in}}/\sqrt{w}$；贪心算法按优先级依次为每个任务选择最优时刻（速度最大化），时间复杂度 $O(N \cdot M)$（$N$ 为时间点数，$M$ 为任务数），实测 $1.2$\,s 出解。灵敏度分析表明贪心解质量随 SG 窗口长度单调提升，$w \geq 9$ 后稳定，验证了平滑方案的鲁棒性。
+\textbf{方法选型对比}：混合整数线性规划（MILP）可求全局最优解，但变量规模过大（以 $2$\,Hz 网格离散化，$T=600$\,s 对应 $1200$ 时间点 $\times 7$ 任务 $\times 12$ 硬约束 $\approx 10^5$ 个约束），使用 CBC/Gurobi 求解器超时风险大（预试验显示超过 300\,s 仍未收敛）。本文采用\textbf{Savitzky-Golay（SG）滤波 + 贪心优化}：SG 滤波通过局部多项式拟合平滑轨迹，同时保持峰值特征（窗口长度 $w=151$，多项式阶数 $d=3$），噪声衰减 $\sigma_{\text{out}} \approx \sigma_{\text{in}}/\sqrt{w}$；贪心算法按优先级依次为每个任务选择最优时刻（速度最大化），时间复杂度 $O(N \cdot M)$（$N$ 为时间点数，$M$ 为任务数），实测 $1.2$\,s 出解。灵敏度分析表明贪心解质量随 SG 窗口长度单调提升，$w \geq 9$ 后稳定，验证了平滑方案的鲁棒性。
 
 \begin{figure}[H]
     \centering

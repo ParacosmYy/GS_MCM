@@ -9,13 +9,11 @@
     \caption{四问验证结果汇总}
     \label{tab:verify_summary}
     \begin{tabular}{@{}clcc@{}}
-        \toprule
-        问题 & 检查项 & 项数 & 状态 \\
-        \midrule
+        \headerrow 问题 & 检查项 & 项数 & 状态 \\
         1 & 等间隔/RMSE/点数/Δτ范围 & 4 & 全 PASS \\
-        2 & 等间隔/RMSE/Δτ/偏差/点数 & 5 & 全 PASS \\
+        \altrow 2 & 等间隔/RMSE/Δτ/偏差/点数 & 5 & 全 PASS \\
         3 & 等间隔/Δτ/p值/AIC一致/点数 & 5 & 全 PASS \\
-        4 & 红字保留/约束合法/任务数 & 3 & 全 PASS \\
+        \altrow 4 & 红字保留/约束合法/任务数 & 3 & 全 PASS \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -49,13 +47,11 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
     \caption{SG 平滑窗口对问题四任务完成数的影响}
     \label{tab:sens_sg}
     \begin{tabular}{@{}ccccc@{}}
-        \toprule
-        窗口 & $v_{\max}$ (m/s) & $a_{\max}$ (m/s$^2$) & 射击数 & 拍照数 \\
-        \midrule
+        \headerrow 窗口 & $v_{\max}$ (m/s) & $a_{\max}$ (m/s$^2$) & 射击数 & 拍照数 \\
         51 & 8.97 & 14.0 & 0 & 1 \\
-        71 & 8.2 & 10.5 & 1 & 4 \\
+        \altrow 71 & 8.2 & 10.5 & 1 & 4 \\
         101 & 7.64 & 6.49 & 3 & 17 \\
-        131 & 6.8 & 4.5 & 6 & 15 \\
+        \altrow 131 & 6.8 & 4.5 & 6 & 15 \\
         151 & 6.2 & 3.8 & 8 & 16 \\
         \bottomrule
     \end{tabular}

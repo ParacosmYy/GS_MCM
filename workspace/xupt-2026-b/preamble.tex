@@ -43,6 +43,13 @@
 \graphicspath{{figures/}}
 \renewcommand{\arraystretch}{1.3}
 
+% ---------- 表格行色（zebra striping） ----------
+\usepackage{colortbl}
+\definecolor{tableheader}{HTML}{2C3E50}
+\definecolor{tablerow}{HTML}{F8F9FA}
+\newcommand{\headerrow}{\rowcolor{tableheader}\color{white}\bfseries}
+\newcommand{\altrow}{\rowcolor{tablerow}}
+
 % ---------- TikZ 流程图（加强：shapes.symbols + chains 用于流程图专用形状） ----------
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, shapes.geometric, shapes.symbols,

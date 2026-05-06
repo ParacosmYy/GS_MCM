@@ -82,7 +82,7 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
 
 \subsection{KF 融合与输出}
 
-按零偏模型执行卡尔曼滤波融合（同问题二流程，但 $\Delta x = \Delta y = 0$）。融合参数根据 EDA 估计噪声调整：$\sigma_1 \approx 4.18$\,m，$\sigma_2 \approx 2.89$\,m，过程噪声 $q_a = 8$\,m/s$^2$。
+按零偏模型执行卡尔曼滤波融合（同问题二流程，但 $\Delta x = \Delta y = 0$）。融合参数根据 EDA 估计噪声调整：$\sigma_1 \approx 4.18$\,m，$\sigma_2 \approx 2.89$\,m（噪声水平由 EDA 阶段二阶差分方法估计，详见表~\ref{fig:noise_heat} 所示噪声热力图），过程噪声 $q_a = 8$\,m/s$^2$。
 
 输出 10\,Hz 轨迹 \textbf{3691 点}（时长 369.0\,s），作为问题四的输入。
 

@@ -131,6 +131,8 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
     \label{fig:p4_map}
 \end{figure}
 
+图~\ref{fig:p4_map} 显示射击任务集中在轨迹中低速弯道段（$t>500$\,s），符合 $v \le 2$\,m/s 约束的空间分布特征。
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/fig_p4_velocity_profile.png}
@@ -145,9 +147,11 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
     \label{fig:p4_gantt}
 \end{figure}
 
+甘特图清晰展示了 24 个任务的时间分配：射击任务准备窗口（1.5\,s）显著长于拍照（0.5\,s），时间占用比约 3:1。
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{figures/fig_p4_score_pie.png}
+    \includegraphics[width=0.6\textwidth]{figures/fig_p4_score_pie.png}
     \caption{任务完成结构（环形图）：射击 8/18 + 拍照 16 次}
     \label{fig:p4_pie}
 \end{figure}

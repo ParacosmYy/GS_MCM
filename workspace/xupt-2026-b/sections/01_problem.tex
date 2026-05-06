@@ -10,7 +10,7 @@
 \begin{equation}
 \boldsymbol{z}_k^{(i)} = \boldsymbol{p}(t_k) + \boldsymbol{\varepsilon}_k^{(i)}, \quad \boldsymbol{\varepsilon}_k^{(i)} \sim \mathcal{N}(\boldsymbol{0}, \sigma_i^2 \boldsymbol{I}), \quad i=1,2
 \end{equation}
-其中 $t_k$ 为各路自身时间戳，$\sigma_i$ 为观测噪声标准差。方式2可能存在相对方式1的时间偏差 $\Delta\tau$（秒）和空间偏差 $(\Delta x, \Delta y)$（米），其观测模型扩展为：
+其中 $t_k$ 为各路自身时间戳，$\sigma_i$ 为观测噪声标准差。其中问题一为理想无噪声情形（$\sigma_i \to 0$），问题二/三 $\sigma_i > 0$。方式2可能存在相对方式1的时间偏差 $\Delta\tau$（秒）和空间偏差 $(\Delta x, \Delta y)$（米），其观测模型扩展为：
 \begin{equation}
 \boldsymbol{z}_2(t) = \boldsymbol{p}(t - \Delta\tau) + \begin{pmatrix} \Delta x \\ \Delta y \end{pmatrix} + \boldsymbol{\varepsilon}_2(t)
 \end{equation}
