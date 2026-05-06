@@ -1,0 +1,121 @@
+[
+  {
+    "sheet": "Sheet1",
+    "coord": "A1",
+    "row": 1,
+    "col": 1,
+    "value": "序号"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "B1",
+    "row": 1,
+    "col": 2,
+    "value": "目标编号"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "C1",
+    "row": 1,
+    "col": 3,
+    "value": "任务"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "D1",
+    "row": 1,
+    "col": 4,
+    "value": "开始准备时刻(s)"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "E1",
+    "row": 1,
+    "col": 5,
+    "value": "任务执行时刻(s)"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "H1",
+    "row": 1,
+    "col": 8,
+    "value": "注意：请按照时间先后顺序，依次在表格中填写相关内容。"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "H2",
+    "row": 2,
+    "col": 8,
+    "value": "填写范例："
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "H3",
+    "row": 3,
+    "col": 8,
+    "value": "序号"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "I3",
+    "row": 3,
+    "col": 9,
+    "value": "目标编号"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "J3",
+    "row": 3,
+    "col": 10,
+    "value": "任务"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "K3",
+    "row": 3,
+    "col": 11,
+    "value": "开始准备时刻(s)"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "L3",
+    "row": 3,
+    "col": 12,
+    "value": "任务执行时刻(s)"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "H4",
+    "row": 4,
+    "col": 8,
+    "value": 1
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "I4",
+    "row": 4,
+    "col": 9,
+    "value": "P01"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "J4",
+    "row": 4,
+    "col": 10,
+    "value": "拍照"
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "K4",
+    "row": 4,
+    "col": 11,
+    "value": 2.55
+  },
+  {
+    "sheet": "Sheet1",
+    "coord": "L4",
+    "row": 4,
+    "col": 12,
+    "value": 3.05
+  }
+]

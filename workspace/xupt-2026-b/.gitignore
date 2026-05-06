@@ -1,0 +1,7 @@
+# AutoMCM-Pro 流水线沙盒整目录屏蔽
+CUMCM_Workspace/
+
+# 临时/抽取产物
+extracted_images/
+*.tmp
+*.bak
