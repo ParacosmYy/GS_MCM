@@ -1,0 +1,76 @@
+\documentclass[a4paper, 12pt]{ctexart}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\linespread{1.38}
+
+\begin{document}
+
+\begin{center}
+{\heiti\zihao{-2} AI 工具使用详情}\\[1em]
+{\zihao{4} 2026 年西安邮电大学第 21 届数学建模竞赛}
+\end{center}
+
+\vspace{1.5em}
+
+\section*{一、所用 AI 工具名称和版本}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+工具名称 & 版本/型号 & 开发机构 & 使用日期 \\
+\midrule
+Claude & Opus 4 & Anthropic & 2026-05-06 至 2026-05-07 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{二、具体使用目的和环节}
+
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{代码实现辅助}：根据参赛队确定的数学模型规格（三次样条对齐、联合最小二乘、卡尔曼滤波、贪心调度），辅助编写 Python 求解脚本。
+\item \textbf{LaTeX 排版}：论文格式调整、图表插入位置优化、参考文献国标格式化。
+\item \textbf{灵敏度分析}：批量参数扫描脚本（不同噪声水平、不同 SG 窗口）的编写。
+\item \textbf{文献检索}：相关领域参考文献的推荐与 BibTeX 条目整理。
+\end{enumerate}
+
+\section*{三、关键交互记录}
+
+以下摘录 3 段代表性交互：
+
+\subsection*{交互 1：问题一求解代码}
+
+\textbf{提示词}："问题1两路无噪声数据存在时间偏差，用三次样条插值后做一维搜索对齐，帮我实现代码。搜索范围根据两路起始时间差确定。"
+
+\textbf{AI 回复摘要}：给出了基于 scipy.interpolate.CubicSpline 的实现框架，包含粗搜（0.1s 步长网格）和精搜（minimize\_scalar bounded 方法）两阶段。
+
+\textbf{人工修改}：调整搜索范围从 $\pm 100$\,s 改为 $\pm 50$\,s（根据 EDA 分析两路时间差约 247\,s）；增加公共时段为空的异常处理；修正 10\,Hz 输出网格的边界条件。
+
+\subsection*{交互 2：问题三假设检验方法}
+
+\textbf{提示词}："问题3需要判断真实数据是否存在系统偏差，应该用什么统计检验方法？要求鲁棒性强。"
+
+\textbf{AI 回复摘要}：建议采用 Wald 检验构造 $\chi^2$ 统计量，并辅以 AIC 信息准则对比，形成双判据框架。
+
+\textbf{人工修改}：采纳双判据框架设计；Bootstrap 重采样次数由队员根据计算时间预算确定为 150 次；判决阈值（$p < 0.05$ 且 $\Delta\text{AIC} > 2$）由队员参考统计学教材确定。
+
+\subsection*{交互 3：问题四平滑窗口选择}
+
+\textbf{提示词}："SG 平滑窗口选多大合适？噪声大约 3--4\,m，采样率 10\,Hz。"
+
+\textbf{AI 回复摘要}：建议做灵敏度分析，对比不同窗口下的速度/加速度统计量和可行时刻数。
+
+\textbf{人工修改}：队员实际测试了 51、71、101、131、151 五档窗口，根据任务完成数与轨迹形变的权衡，最终选定 151 点窗口。
+
+\section*{四、采纳和人工修改情况}
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{核心建模方向}（样条对齐 / 联合估计 / Wald 检验 / 贪心调度）：由参赛队根据问题数学性质独立确定，AI 未参与方法选型决策。
+\item \textbf{约束阈值}（射击距离/速度/加速度、拍照距离/角差等 12 个参数）：由队员从原题 Word 公式图中人工读取并确认。
+\item \textbf{AI 代码产出}：经队员逐一运行、核验输出数值合理性后采纳；发现角差计算 bug 后由队员定位并修正。
+\item \textbf{论文撰写}：问题分析、模型假设理由、结论与评价章节由参赛队独立撰写；AI 辅助部分章节的 LaTeX 格式排版。
+\item \textbf{整体情况}：AI 主要承担代码实现和排版等执行性工作，建模思路、参数决策、结果解释由参赛队主导。
+\end{itemize}
+
+\end{document}
