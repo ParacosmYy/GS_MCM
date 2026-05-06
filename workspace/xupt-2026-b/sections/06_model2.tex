@@ -26,7 +26,7 @@
 
 方式2的观测在更新前先校正偏差：$\tilde{\boldsymbol{z}}_2 = \boldsymbol{z}_2 - (\Delta x^*, \Delta y^*)^\top$。
 
-\begin{algorithm}[H]
+\begin{algorithm}[htbp]
 \caption{卡尔曼融合算法（问题二）}
 \label{alg:p2_kf}
 \KwIn{方式1数据 $\{\boldsymbol{z}_1^k, t_1^k\}$，方式2数据 $\{\boldsymbol{z}_2^k, t_2^k\}$，估计参数 $\Delta\tau^*, \Delta x^*, \Delta y^*$}
