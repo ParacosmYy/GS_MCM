@@ -63,32 +63,58 @@
 
 \begin{figure}[htbp]
     \centering
-    \begin{tikzpicture}[node distance=0.9cm and 1.5cm]
-        \node[terminal]                              (p)   {题目分析};
-        \node[procbox,  below=of p]                  (a)   {模型假设};
-        \node[procbox,  below=of a]                  (n)   {符号说明};
-        \node[procbox,  below=of n]                  (m1)  {问题一：样条 + 一维搜索};
-        \node[procbox,  below=of m1]                 (m2)  {问题二：联合估计 + KF};
-        \node[procbox,  below=of m2]                 (m3)  {问题三：Wald + AIC 检验};
-        \node[procbox,  below=of m3]                 (m4)  {问题四：SG 平滑 + 贪心优化};
-        \node[decision, below=of m4, yshift=-0.3cm]  (d)   {灵敏度\\检验通过？};
-        \node[terminal, below=of d, yshift=-0.3cm]   (c)   {结论与评价};
+    \begin{tikzpicture}[node distance=1.0cm and 2.8cm]
+        % ===== 左列：主流程 =====
+        \node[terminal, blur shadow={shadow blur steps=5}] (start) {问题分析};
 
-        \node[draw=black, dashed, thick,
-              fit=(m1)(m2)(m3)(m4),
-              inner sep=10pt,
-              label={[font=\small\heiti]right:{核心建模}}] (core) {};
+        \node[corebox, below=of start] (p1) {三次样条 + 一维搜索};
+        \node[badge, left=0.3cm of p1] {1};
 
-        \draw[arrow] (p)  -- (a);
-        \draw[arrow] (a)  -- (n);
-        \draw[arrow] (n)  -- (m1);
-        \draw[arrow] (m1) -- (m2);
-        \draw[arrow] (m2) -- (m3);
-        \draw[arrow] (m3) -- (m4);
-        \draw[arrow] (m4) -- (d);
-        \draw[arrow] (d)  -- node[right, font=\small]{是} (c);
-        \draw[arrow] (d.west) -- ++(-1.2,0) |- node[pos=0.25, left, font=\small]{否} (core.west);
+        \node[corebox, below=of p1] (p2) {联合最小二乘 + KF};
+        \node[badge, left=0.3cm of p2] {2};
+
+        \node[corebox, below=of p2] (p3) {Wald + AIC 双判据};
+        \node[badge, left=0.3cm of p3] {3};
+
+        \node[corebox, below=of p3] (p4) {SG 平滑 + 贪心调度};
+        \node[badge, left=0.3cm of p4] {4};
+
+        \node[decision, below=1.2cm of p4] (check) {验证\\通过？};
+        \node[terminal, below=1.0cm of check, blur shadow={shadow blur steps=5}] (end) {结论与评价};
+
+        % ===== 右列：数据产物 =====
+        \node[datanode, right=of p1] (d1) {10\,Hz 轨迹\\7004 点};
+        \node[datanode, right=of p2] (d2) {融合轨迹\\8513 点};
+        \node[datanode, right=of p3] (d3) {判决 $H_0$\\3691 点};
+        \node[datanode, right=of p4] (d4) {result.xlsx\\24 任务};
+
+        % ===== 核心建模分组框 =====
+        \begin{scope}[on background layer]
+            \node[groupbg, fit=(p1)(p2)(p3)(p4)(d1)(d2)(d3)(d4),
+                  label={[font=\small\heiti, anchor=north east]north east:核心建模}] (core) {};
+        \end{scope}
+
+        % ===== 主流程箭头 =====
+        \draw[arrow] (start) -- (p1);
+        \draw[arrow] (p1) -- (p2);
+        \draw[arrow] (p2) -- (p3);
+        \draw[arrow] (p3) -- (p4);
+        \draw[arrow] (p4) -- (check);
+        \draw[arrow] (check) -- node[right, font=\small]{是} (end);
+
+        % ===== 数据流箭头 =====
+        \draw[dataarrow] (p1) -- (d1);
+        \draw[dataarrow] (p2) -- (d2);
+        \draw[dataarrow] (p3) -- (d3);
+        \draw[dataarrow] (p4) -- (d4);
+
+        % ===== 反馈回路 =====
+        \draw[feedback] (check.west) -- ++(-1.5,0) |- node[pos=0.25, left, font=\small]{否} (core.west);
+
+        % ===== 数据流向下传递（虚线连接） =====
+        \draw[dataarrow] (d1.south) -- ++(0,-0.3) -| ([xshift=0.5cm]p2.east);
+        \draw[dataarrow] (d3.south) -- ++(0,-0.3) -| ([xshift=0.5cm]p4.east);
     \end{tikzpicture}
-    \caption{本文整体求解框架}
+    \caption{本文整体求解框架（左：方法主干；右：数据产物；虚线：数据流向）}
     \label{fig:framework}
 \end{figure}

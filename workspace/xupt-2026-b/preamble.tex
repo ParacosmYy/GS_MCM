@@ -69,7 +69,7 @@
 % ---------- TikZ 流程图（加强：shapes.symbols + chains 用于流程图专用形状） ----------
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, shapes.geometric, shapes.symbols,
-                positioning, calc, chains, fit, backgrounds}
+                positioning, calc, chains, fit, backgrounds, shadows.blur}
 
 % 预制流程图节点样式（全黑白）
 \tikzset{
@@ -85,7 +85,22 @@
                          minimum width=6em, minimum height=2em,
                          align=center, font=\small},
     arrow/.style      = {-Stealth, thick, black},
-    flowline/.style   = {thick, black}
+    flowline/.style   = {thick, black},
+    % 升级版流程图样式（双列+阴影）
+    corebox/.style    = {rectangle, draw=black, thick, fill=black!6,
+                         minimum width=9em, minimum height=2.4em,
+                         align=center, font=\small\bfseries,
+                         blur shadow={shadow blur steps=5, shadow xshift=0.5mm, shadow yshift=-0.5mm}},
+    datanode/.style   = {trapezium, trapezium left angle=75, trapezium right angle=105,
+                         draw=black!60, thick, fill=white,
+                         minimum width=7em, minimum height=1.8em,
+                         align=center, font=\footnotesize},
+    badge/.style      = {circle, draw=black, fill=black!80, text=white,
+                         minimum size=1.4em, font=\footnotesize\bfseries, inner sep=0pt},
+    groupbg/.style    = {draw=black!40, dashed, thick, fill=black!3,
+                         rounded corners=5pt, inner sep=8pt},
+    dataarrow/.style  = {-Stealth, thin, black!50, densely dotted},
+    feedback/.style   = {-Stealth, thick, black!60, densely dashed}
 }
 
 % ---------- 列表 ----------
