@@ -6,23 +6,23 @@
     \centering
     \caption{主要符号说明}
     \label{tab:notation}
-    \begin{tabular}{@{}cl@{}}
+    \begin{tabular}{@{}clc@{}}
         \toprule
-        符号 & 含义 \\
+        符号 & 含义 & 单位 \\
         \midrule
-        $\boldsymbol{z}_k^{(i)}$ & 第 $i$ 路在 $k$ 时刻的位置观测 $(x,y)^\top$ \\
-        $\boldsymbol{p}(t)$ & 真实轨迹位置 \\
-        $\Delta\tau$ & 方式2相对方式1的时间偏差（s）\\
-        $\Delta x, \Delta y$ & 方式2的空间系统偏差（m）\\
-        $S_i(t)$ & 第 $i$ 路的三次样条插值 \\
-        $\boldsymbol{x}_k$ & 卡尔曼状态向量 $(p_x, p_y, v_x, v_y, a_x, a_y)^\top$ \\
-        $\boldsymbol{F}, \boldsymbol{Q}, \boldsymbol{H}, \boldsymbol{R}$ & 状态转移、过程噪声、观测、观测噪声矩阵 \\
-        $\sigma_i$ & 第 $i$ 路观测噪声标准差（m）\\
-        $q_a$ & 过程噪声加速度抖动强度（m/s$^2$）\\
-        $d$ & 机器人与目标间距离（m）\\
-        $v, a$ & 机器人线速度（m/s）、加速度（m/s$^2$）\\
-        $\Delta\theta$ & 同一拍照目标两次执行的方向角差（$^\circ$）\\
-        $\Delta_{\text{prep}}$ & 准备时长（射击 1.5\,s，拍照 0.5\,s）\\
+        $\boldsymbol{z}_k^{(i)}$ & 第 $i$ 路在 $k$ 时刻的位置观测 $(x,y)^\top$ & m \\
+        $\boldsymbol{p}(t)$ & 真实轨迹位置 & m \\
+        $\Delta\tau$ & 方式2相对方式1的时间偏差 & s \\
+        $\Delta x, \Delta y$ & 方式2的空间系统偏差 & m \\
+        $S_i(t)$ & 第 $i$ 路的三次样条插值 & m \\
+        $\boldsymbol{x}_k$ & 卡尔曼状态向量 $(p_x, p_y, v_x, v_y, a_x, a_y)^\top$ & 混合 \\
+        $\boldsymbol{F}, \boldsymbol{Q}, \boldsymbol{H}, \boldsymbol{R}$ & 状态转移、过程噪声、观测、观测噪声矩阵 & — \\
+        $\sigma_i$ & 第 $i$ 路观测噪声标准差 & m \\
+        $q_a$ & 过程噪声加速度抖动强度 & m/s$^2$ \\
+        $d$ & 机器人与目标间距离 & m \\
+        $v, a$ & 机器人线速度、加速度 & m/s, m/s$^2$ \\
+        $\Delta\theta$ & 同一拍照目标两次执行的方向角差 & $^\circ$ \\
+        $\Delta_{\text{prep}}$ & 准备时长（射击 1.5\,s，拍照 0.5\,s） & s \\
         \bottomrule
     \end{tabular}
 \end{table}

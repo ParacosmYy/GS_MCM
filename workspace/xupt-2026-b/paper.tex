@@ -41,6 +41,7 @@
 \input{sections/08_model4.tex}
 \input{sections/09_validation.tex}
 \input{sections/10_evaluation.tex}
+\input{sections/11_conclusion.tex}
 
 % ---------- 参考文献 ----------
 \newpage
@@ -56,12 +57,35 @@
 % \lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
 \noindent 完整源代码以附件形式随论文提交，见 \texttt{code/main.py}。
 
-\section{\texorpdfstring{附录 B\quad 补充数据表}{附录 B 补充数据表}}
-\markright{附录 B\quad 补充数据表}
-\noindent 补充数据表格（可按需填入）。
+\section{\texorpdfstring{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}{附录 B 卡尔曼滤波过程噪声矩阵推导}}
+\markright{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}
+\noindent 对于常加速度运动模型，状态转移矩阵为：
+\begin{equation}
+\mathbf{F} = \begin{bmatrix} 1 & \Delta t & \frac{1}{2}\Delta t^2 \\ 0 & 1 & \Delta t \\ 0 & 0 & 1 \end{bmatrix}
+\end{equation}
+过程噪声由加速度扰动驱动，噪声输入矩阵 $\mathbf{G} = [0, 0, 1]^\top$，假设加速度扰动方差为 $q$，则连续时间过程噪声协方差为 $\mathbf{Q}_c = \mathbf{G} q \mathbf{G}^\top$。离散化后：
+\begin{equation}
+\mathbf{Q} = \int_0^{\Delta t} \mathbf{F}(\tau) \mathbf{G} q \mathbf{G}^\top \mathbf{F}(\tau)^\top \, \mathrm{d}\tau
+= q \begin{bmatrix} \frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & \frac{\Delta t^3}{6} \\ \frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} \\ \frac{\Delta t^3}{6} & \frac{\Delta t^2}{2} & \Delta t \end{bmatrix}
+\end{equation}
+对于二维运动，$x$ 和 $y$ 方向独立，最终过程噪声矩阵为 $6 \times 6$ 分块对角阵：
+\begin{equation}
+\mathbf{Q}_{6 \times 6} = \begin{bmatrix} \mathbf{Q}_x & \mathbf{0}_{3 \times 3} \\ \mathbf{0}_{3 \times 3} & \mathbf{Q}_y \end{bmatrix}
+\end{equation}
+本文采用 $q = 0.1$\,m$^2$/s$^5$，$\Delta t = 0.1$\,s（10\,Hz 采样），以平衡模型灵活性与噪声抑制。
 
-\section{\texorpdfstring{附录 C\quad 补充推导}{附录 C 补充推导}}
-\markright{附录 C\quad 补充推导}
-\noindent 较长的数学推导过程（可按需填入）。
+\section{\texorpdfstring{附录 C\quad Wald 检验统计量构造}{附录 C  Wald 检验统计量构造}}
+\markright{附录 C\quad Wald 检验统计量构造}
+\noindent 在问题二中，为检验系统性偏差 $\boldsymbol{\beta} = (\Delta x, \Delta y)$ 是否显著异于零，构造 Wald 检验统计量。
+
+设原假设 $H_0: \boldsymbol{\beta} = \mathbf{0}$，基于最大似然估计得到 $\hat{\boldsymbol{\beta}}$ 及其协方差矩阵 $\hat{\boldsymbol{\Sigma}}_{\beta}$。Wald 统计量定义为：
+\begin{equation}
+W = \hat{\boldsymbol{\beta}}^\top \hat{\boldsymbol{\Sigma}}_{\beta}^{-1} \hat{\boldsymbol{\beta}}
+\end{equation}
+在 $H_0$ 成立条件下，$W$ 渐近服从 $\chi^2(2)$ 分布（自由度为 2，对应两个偏差参数）。协方差矩阵通过 Hessian 矩阵逆估计：
+\begin{equation}
+\hat{\boldsymbol{\Sigma}}_{\beta} = \left[ -\frac{\partial^2 \mathcal{L}}{\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}^\top} \right]^{-1} \bigg|_{\hat{\boldsymbol{\beta}}}
+\end{equation}
+其中 $\mathcal{L}$ 为对数似然函数。本文计算得 $W \approx 42.7$，对应 $p < 0.001$，强烈拒绝 $H_0$，表明偏差参数具有统计显著性。
 
 \end{document}

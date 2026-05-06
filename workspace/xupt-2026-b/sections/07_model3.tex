@@ -4,17 +4,58 @@
 
 附件3为真实测量数据，需判断是否存在系统偏差。采用\textbf{双判据}策略：
 
-\textbf{（1）Wald 检验}。在联合估计框架下估得 $(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$ 及其 Bootstrap 协方差 $\hat{\boldsymbol{\Sigma}}$，构造统计量：
+\textbf{（1）Wald 检验}\cite{wald1943}。在联合估计框架下估得 $(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$ 及其 Bootstrap\cite{efron1979} 协方差 $\hat{\boldsymbol{\Sigma}}$，构造统计量：
 \begin{equation}
     W = (\hat{\Delta x}, \hat{\Delta y}) \hat{\boldsymbol{\Sigma}}^{-1} (\hat{\Delta x}, \hat{\Delta y})^\top \sim \chi^2(2)
 \end{equation}
 
-\textbf{（2）AIC 对比}。比较零偏模型（仅含 $\Delta\tau$，1 参数）与带偏模型（含 $\Delta\tau, \Delta x, \Delta y$，3 参数）：
+\textbf{（2）AIC 对比}\cite{akaike1974}。比较零偏模型（仅含 $\Delta\tau$，1 参数）与带偏模型（含 $\Delta\tau, \Delta x, \Delta y$，3 参数）：
 \begin{equation}
     \text{AIC} = n \ln(\text{SSE}/n) + 2k
 \end{equation}
 
 判决规则：当 Wald $p < 0.05$ \textbf{且} $\Delta\text{AIC} > 2$ 时接受 H$_1$（有偏差），否则接受 H$_0$。
+
+\begin{algorithm}[H]
+\caption{系统偏差存在性检验与融合算法（问题三）}
+\label{alg:p3_test}
+\KwIn{方式1数据 $\{\boldsymbol{z}_1^k, t_1^k\}$，方式2数据 $\{\boldsymbol{z}_2^k, t_2^k\}$}
+\KwOut{判决结果（有偏/无偏）、融合轨迹 $\{\hat{\boldsymbol{p}}(0.1k)\}$}
+
+\tcp{步骤1：联合估计（带偏模型）}
+用 Nelder-Mead 最小化式~\eqref{eq:p2_joint} 得 $(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$ \\
+计算带偏模型残差平方和 $\text{SSE}_1$
+
+\tcp{步骤2：Bootstrap 估计协方差矩阵}
+\For{$b = 1, 2, \ldots, 200$}{
+    重采样数据（分层 Bootstrap，保持时序结构） \\
+    重估参数得 $(\Delta\tau^{(b)}, \Delta x^{(b)}, \Delta y^{(b)})$
+}
+计算样本协方差 $\hat{\boldsymbol{\Sigma}} \leftarrow \text{cov}(\{(\Delta x^{(b)}, \Delta y^{(b)})\})$
+
+\tcp{步骤3：Wald 检验}
+构造统计量 $W = (\hat{\Delta x}, \hat{\Delta y}) \hat{\boldsymbol{\Sigma}}^{-1} (\hat{\Delta x}, \hat{\Delta y})^\top$ \\
+计算 $p$-value：$p_W \leftarrow P(\chi^2(2) > W)$ \tcp*{自由度2}
+
+\tcp{步骤4：AIC 对比}
+用一维搜索估计零偏模型（仅 $\Delta\tau$）得 $\hat{\Delta\tau}_0$，计算 $\text{SSE}_0$ \\
+$n \leftarrow$ 公共时段观测点数 \\
+$\text{AIC}_0 \leftarrow n \ln(\text{SSE}_0/n) + 2 \times 1$ \tcp*{零偏模型：1参数}
+$\text{AIC}_1 \leftarrow n \ln(\text{SSE}_1/n) + 2 \times 3$ \tcp*{带偏模型：3参数}
+$\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
+
+\tcp{步骤5：双判据判决}
+\eIf{$p_W < 0.05$ \textbf{且} $\Delta\text{AIC} > 2$}{
+    判决 $\leftarrow$ H$_1$（存在系统偏差） \\
+    执行卡尔曼融合（同算法~\ref{alg:p2_kf}，使用 $\hat{\Delta x}, \hat{\Delta y}$ 校正）
+}{
+    判决 $\leftarrow$ H$_0$（无系统偏差） \\
+    执行卡尔曼融合（使用 $\hat{\Delta\tau}_0$，不校正空间偏差）
+}
+
+\tcp{步骤6：输出融合轨迹}
+按选定模型执行异步卡尔曼滤波，输出 10\,Hz 轨迹
+\end{algorithm}
 
 \subsection{检验结果}
 

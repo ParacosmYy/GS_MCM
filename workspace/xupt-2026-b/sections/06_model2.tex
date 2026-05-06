@@ -26,6 +26,52 @@
 
 方式2的观测在更新前先校正偏差：$\tilde{\boldsymbol{z}}_2 = \boldsymbol{z}_2 - (\Delta x^*, \Delta y^*)^\top$。
 
+\begin{algorithm}[H]
+\caption{卡尔曼融合算法（问题二）}
+\label{alg:p2_kf}
+\KwIn{方式1数据 $\{\boldsymbol{z}_1^k, t_1^k\}$，方式2数据 $\{\boldsymbol{z}_2^k, t_2^k\}$，估计参数 $\Delta\tau^*, \Delta x^*, \Delta y^*$}
+\KwOut{10\,Hz 融合轨迹 $\{\hat{\boldsymbol{p}}(0.1k)\}_{k=0}^{N-1}$}
+
+\tcp{步骤1：校正方式2时间戳与空间偏差}
+$t_2^k \leftarrow t_2^k + \Delta\tau^*$ \tcp*{时间对齐}
+$\tilde{\boldsymbol{z}}_2^k \leftarrow \boldsymbol{z}_2^k - (\Delta x^*, \Delta y^*)^\top$ \tcp*{空间校正}
+
+\tcp{步骤2：合并两路观测并按时间戳排序}
+$\mathcal{Z} \leftarrow \{(\boldsymbol{z}_1^k, t_1^k, \sigma_1)\} \cup \{(\tilde{\boldsymbol{z}}_2^k, t_2^k, \sigma_2)\}$ \\
+按时间戳升序排序 $\mathcal{Z}$
+
+\tcp{步骤3：初始化卡尔曼滤波器}
+$\hat{\boldsymbol{x}}_0 \leftarrow (\boldsymbol{z}_{\text{first}}, \boldsymbol{0}, \boldsymbol{0})^\top$ \tcp*{初始状态：首观测 + 零速零加}
+$\boldsymbol{P}_0 \leftarrow \text{diag}(\sigma^2, \sigma^2, v_{\max}^2, v_{\max}^2, a_{\max}^2, a_{\max}^2)$ \tcp*{初始协方差}
+$q_a \leftarrow 8$\,m/s$^2$ \tcp*{过程噪声强度}
+
+\tcp{步骤4：异步观测更新循环}
+\For{$(\boldsymbol{z}, t, \sigma) \in \mathcal{Z}$}{
+    $\Delta t \leftarrow t - t_{\text{prev}}$ \\
+    \tcp{预测步}
+    $\boldsymbol{F} \leftarrow \text{construct\_F}(\Delta t)$ \tcp*{常加速度转移矩阵}
+    $\boldsymbol{Q} \leftarrow \text{construct\_Q}(\Delta t, q_a)$ \tcp*{过程噪声矩阵}
+    $\hat{\boldsymbol{x}}^- \leftarrow \boldsymbol{F} \hat{\boldsymbol{x}}$ \\
+    $\boldsymbol{P}^- \leftarrow \boldsymbol{F} \boldsymbol{P} \boldsymbol{F}^\top + \boldsymbol{Q}$ \\
+    \tcp{更新步}
+    $\boldsymbol{H} \leftarrow [\boldsymbol{I}_2, \boldsymbol{0}_{2\times 4}]$ \tcp*{观测矩阵：仅提取位置}
+    $\boldsymbol{R} \leftarrow \sigma^2 \boldsymbol{I}_2$ \tcp*{观测噪声}
+    $\boldsymbol{y} \leftarrow \boldsymbol{z} - \boldsymbol{H}\hat{\boldsymbol{x}}^-$ \tcp*{创新}
+    $\boldsymbol{S} \leftarrow \boldsymbol{H}\boldsymbol{P}^-\boldsymbol{H}^\top + \boldsymbol{R}$ \\
+    $\boldsymbol{K} \leftarrow \boldsymbol{P}^-\boldsymbol{H}^\top \boldsymbol{S}^{-1}$ \tcp*{卡尔曼增益}
+    $\hat{\boldsymbol{x}} \leftarrow \hat{\boldsymbol{x}}^- + \boldsymbol{K}\boldsymbol{y}$ \\
+    $\boldsymbol{P} \leftarrow (\boldsymbol{I} - \boldsymbol{K}\boldsymbol{H})\boldsymbol{P}^-$ \\
+    $t_{\text{prev}} \leftarrow t$
+}
+
+\tcp{步骤5：在10\,Hz均匀网格上插值输出}
+\For{$k = 0, 1, \ldots, N-1$}{
+    $t_k \leftarrow 0.1 k$ \\
+    用最近滤波状态预测至 $t_k$：$\hat{\boldsymbol{p}}(t_k) \leftarrow \boldsymbol{F}(t_k - t_{\text{last}}) \hat{\boldsymbol{x}}_{\text{last}}$ \\
+    提取位置分量写入输出
+}
+\end{algorithm}
+
 \subsection{结果与分析}
 
 \begin{table}[H]
