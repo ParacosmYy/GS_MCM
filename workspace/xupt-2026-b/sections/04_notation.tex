@@ -3,6 +3,7 @@
 本文所用主要符号如表~\ref{tab:notation} 所示，其余符号将在首次出现时说明。
 
 \begin{table}[H]
+    \renewcommand{\arraystretch}{1.6}
     \centering
     \caption{主要符号说明}
     \label{tab:notation}
@@ -23,6 +24,16 @@
         $v, a$ & 机器人线速度、加速度 & m/s, m/s$^2$ \\
         $\Delta\theta$ & 同一拍照目标两次执行的方向角差 & $^\circ$ \\
         $\Delta_{\text{prep}}$ & 准备时长（射击 1.5\,s，拍照 0.5\,s） & s \\
+        $J(\Delta\tau)$ & 时间对齐目标函数（残差平方和） & m$^2$ \\
+        $\mathcal{T}$ & 两路公共时段 & s \\
+        $W$ & Wald 检验统计量 & — \\
+        $\hat{\boldsymbol{\Sigma}}$ & Bootstrap 协方差矩阵 & m$^2$ \\
+        $N_1, N_2$ & 两路观测点数 & — \\
+        $\mathcal{C}$ & 贪心候选任务集合 & — \\
+        $\mathcal{S}$ & 已选任务执行计划 & — \\
+        $\text{SSE}$ & 残差平方和 & m$^2$ \\
+        $w$ & SG 平滑窗口长度 & 点 \\
+        $B$ & Bootstrap 重采样次数 & — \\
         \bottomrule
     \end{tabular}
 \end{table}

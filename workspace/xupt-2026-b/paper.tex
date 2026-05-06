@@ -51,11 +51,31 @@
 \newpage
 \appendix
 
-\section{\texorpdfstring{附录 A\quad 程序源代码}{附录 A 程序源代码}}
-\markright{附录 A\quad 程序源代码}
-% 需要将 code/main.py 贴入论文时，取消下一行注释：
-% \lstinputlisting[language=Python, caption={主求解脚本 code/main.py}]{code/main.py}
-\noindent 完整源代码以附件形式随论文提交，见 \texttt{code/main.py}。
+\section{\texorpdfstring{附录 A\quad 核心代码}{附录 A 核心代码}}
+\markright{附录 A\quad 核心代码}
+
+\subsection*{A.1 问题一：三次样条时间对齐}
+以两路轨迹各建三次样条，一维搜索最小化残差平方和确定时间偏差。
+\lstinputlisting[language=Python, firstline=42, lastline=54,
+  caption={时间对齐代价函数}]{code/models/problem_1_align.py}
+
+\subsection*{A.2 问题二：联合估计与卡尔曼融合}
+联合最小二乘估计三参数，粗搜加 Nelder-Mead 精搜。
+\lstinputlisting[language=Python, firstline=53, lastline=80,
+  caption={联合代价函数与优化}]{code/models/problem_2_fuse.py}
+
+\subsection*{A.3 问题三：Wald 检验与偏差判定}
+Bootstrap 估计协方差后构造 Wald 统计量。
+\lstinputlisting[language=Python, firstline=52, lastline=80,
+  caption={假设检验核心逻辑}]{code/models/problem_3_realdata.py}
+
+\subsection*{A.4 问题四：贪心任务规划}
+搜索满足距离/速度/加速度约束的可行窗口，贪心分配。
+\lstinputlisting[language=Python, firstline=75, lastline=100,
+  caption={可行窗口搜索与贪心调度}]{code/models/problem_4_schedule.py}
+
+\medskip
+\noindent 完整源代码（含验证脚本与可视化）以附件形式随论文提交。
 
 \section{\texorpdfstring{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}{附录 B 卡尔曼滤波过程噪声矩阵推导}}
 \markright{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}
