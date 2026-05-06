@@ -46,9 +46,9 @@ def load_traj():
     from scipy.signal import savgol_filter
     traj = pd.read_csv(OUTPUT / "traj_10hz_3.csv")
     t = traj["t"].to_numpy()
-    # SG 滤波平滑位置（窗口 101 点 = 10s，3 阶多项式）
+    # SG 滤波平滑位置（窗口 151 点 = 15s，3 阶多项式）
     # 真实数据噪声 σ≈3-4m，需较大窗口才能得到合理的 v/a
-    window = min(101, len(t) - (1 if len(t) % 2 == 0 else 0))
+    window = min(151, len(t) - (1 if len(t) % 2 == 0 else 0))
     if window % 2 == 0:
         window -= 1
     x = savgol_filter(traj["x"].to_numpy(), window, 3)

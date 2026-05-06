@@ -31,8 +31,8 @@ DELTA_THETA_MIN = 60
 def load_smoothed_traj():
     traj = pd.read_csv(OUTPUT / "traj_10hz_3.csv")
     t = traj["t"].to_numpy()
-    x = savgol_filter(traj["x"].to_numpy(), 101, 3)
-    y = savgol_filter(traj["y"].to_numpy(), 101, 3)
+    x = savgol_filter(traj["x"].to_numpy(), 151, 3)
+    y = savgol_filter(traj["y"].to_numpy(), 151, 3)
     dt = 0.1
     vx = np.gradient(x, dt); vy = np.gradient(y, dt)
     v = np.sqrt(vx**2 + vy**2)
