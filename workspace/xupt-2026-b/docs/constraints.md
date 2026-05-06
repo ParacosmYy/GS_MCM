@@ -17,21 +17,17 @@
 
 ```yaml
 # 射击任务约束
-D_shoot_min: ?       # m
-D_shoot_max: ?       # m
-V_shoot_min: ?       # m/s
-V_shoot_max: ?       # m/s
-A_shoot_min: ?       # m/s^2
-A_shoot_max: ?       # m/s^2
+D_shoot_min: 5       # m
+D_shoot_max: 30      # m
+V_shoot_max: 2       # m/s  (v ≤ 2)
+A_shoot_max: 1.5     # m/s² (a ≤ 1.5)
 
 # 拍照任务约束
-D_photo_min: ?       # m
-D_photo_max: ?       # m
-delta_theta_min: ?   # 度
-V_photo_min: ?       # m/s
-V_photo_max: ?       # m/s
-A_photo_min: ?       # m/s^2
-A_photo_max: ?       # m/s^2
+D_photo_min: 10      # m
+D_photo_max: 40      # m
+delta_theta_min: 60  # 度 (Δθ ≥ 60°)
+V_photo_max: 1.5     # m/s  (v ≤ 1.5)
+A_photo_max: 1.5     # m/s² (a ≤ 1.5)
 ```
 
 ## 语义决策（默认勾选项）
