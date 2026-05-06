@@ -60,7 +60,7 @@
     \end{tabular}
 \end{table}
 
-RMSE 达到 $10^{-11}$ 量级，验证了附件1确实无噪声，且三次样条 + 一维搜索方法能精确恢复时间偏差。算法复杂度为 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），远优于 DTW 的 $O(N^2)$。本文采用的平滑处理方法基于 Savitzky-Golay 滤波的经典理论\cite{savitzky1964}，时间同步策略参考了相关领域的研究成果\cite{elson2002}。
+RMSE 达到 $10^{-11}$ 量级，验证了附件1确实无噪声，且三次样条 + 一维搜索方法能精确恢复时间偏差。算法复杂度为 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），优于 DTW 的 $O(N^2)$。本文采用的平滑处理方法基于 Savitzky-Golay 滤波的经典理论\cite{savitzky1964}，时间同步策略参考了相关领域的研究成果\cite{elson2002}。
 
 \begin{figure}[htbp]
     \centering
