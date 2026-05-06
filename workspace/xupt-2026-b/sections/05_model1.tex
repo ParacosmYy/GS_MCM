@@ -44,7 +44,7 @@
 
 \subsection{结果与分析}
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{问题一求解结果}
     \label{tab:result1}
@@ -62,14 +62,14 @@
 
 RMSE 达到 $10^{-11}$ 量级，验证了附件1确实无噪声，且三次样条 + 一维搜索方法能精确恢复时间偏差。算法复杂度为 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），远优于 DTW 的 $O(N^2)$。本文采用的平滑处理方法基于 Savitzky-Golay 滤波的经典理论\cite{savitzky1964}，时间同步策略参考了相关领域的研究成果\cite{elson2002}。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig_p1_alignment.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig_p1_alignment.png}
     \caption{问题一对齐前后轨迹对比（左：未对齐；右：对齐后完美重合）}
     \label{fig:p1_alignment}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.65\textwidth]{figures/fig_p1_cost_landscape.png}
     \caption{代价函数 $\log_{10}(J)$ 关于 $\Delta\tau$ 的景观（碗形，全局最优唯一）}

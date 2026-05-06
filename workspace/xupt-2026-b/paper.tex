@@ -15,17 +15,18 @@
 \begin{document}
 
 % ---------- 封面（承诺书） ----------
-\input{sections/00_cover.tex}
+% 电子版第一页为摘要，承诺书仅纸质版需要
+% \input{sections/00_cover.tex}
 
-% ---------- 摘要页（页码 I, II, ...） ----------
+% ---------- 摘要页（页码 1, 2, ...） ----------
 \newpage
-\pagenumbering{Roman}
+\pagenumbering{arabic}
 \input{sections/00_abstract.tex}
 
-% ---------- 目录（无页眉） ----------
-\newpage
-\thispagestyle{abstractstyle}
-\tableofcontents
+% ---------- 目录（校赛赛规不要求目录，已删除） ----------
+% \newpage
+% \thispagestyle{abstractstyle}
+% \tableofcontents
 
 % ---------- 正文（页码 1, 2, ...） ----------
 \newpage

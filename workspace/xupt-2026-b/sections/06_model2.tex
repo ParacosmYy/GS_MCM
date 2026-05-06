@@ -74,7 +74,7 @@ $q_a \leftarrow 8$\,m/s$^2$ \tcp*{过程噪声强度}
 
 \subsection{结果与分析}
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{问题二求解结果}
     \label{tab:result2}
@@ -94,16 +94,16 @@ $q_a \leftarrow 8$\,m/s$^2$ \tcp*{过程噪声强度}
 
 联合估计避免了"先估 $\Delta\tau$ 再估 $(\Delta x, \Delta y)$"的误差累积效应。KF 融合利用了两路互补的时间分辨率（4\,Hz + 5\,Hz $\to$ 等效 9\,Hz 采样密度），输出 10\,Hz 平滑轨迹。本文采用的卡尔曼滤波方法基于经典理论框架\cite{welch2006}，并结合多传感器融合定位的最新研究成果\cite{hall1997}。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/fig_p2_residual_heatmap.png}
     \caption{对齐后残差二维密度分布（KDE 热力图），残差均值趋近原点}
     \label{fig:p2_residual}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig_p2_kf_innovation.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig_p2_kf_innovation.png}
     \caption{卡尔曼滤波创新序列（X/Y 分量）及 $\pm 3\sigma$ 边界}
     \label{fig:p2_innovation}
 \end{figure}

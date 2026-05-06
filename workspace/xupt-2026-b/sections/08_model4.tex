@@ -104,7 +104,7 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
 
 \subsection{结果分析}
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{问题四任务规划结果}
     \label{tab:result4}
@@ -124,23 +124,23 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
 
 完整任务计划已写入 \texttt{output/result\_v1.xlsx}，格式与题目 \texttt{result.xlsx} 模板一致，红字内容 100\% 保留（17 个单元格逐坐标核验通过）。本文采用的贪心启发式策略具有理论保证，相关方法参考组合优化经典文献\cite{papadimitriou1998}。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/fig_p4_mission_map.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig_p4_mission_map.png}
     \caption{任务执行地图：轨迹（灰线）、目标（红三角/蓝圆）、已完成任务（绿色标记）}
     \label{fig:p4_map}
 \end{figure}
 
 图~\ref{fig:p4_map} 显示射击任务集中在轨迹中低速弯道段（$t>500$\,s），符合 $v \le 2$\,m/s 约束的空间分布特征。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig_p4_velocity_profile.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig_p4_velocity_profile.png}
     \caption{速度/加速度时序与可行窗口分布（红=射击可行，蓝=拍照可行）}
     \label{fig:p4_velocity}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{figures/fig_p4_gantt.png}
     \caption{任务执行甘特图：各任务时间窗 [准备, 执行]（红=射击，蓝=拍照）}
@@ -149,7 +149,7 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
 
 甘特图清晰展示了 24 个任务的时间分配：射击任务准备窗口（1.5\,s）显著长于拍照（0.5\,s），时间占用比约 3:1。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/fig_p4_score_pie.png}
     \caption{任务完成结构（环形图）：射击 8/18 + 拍照 16 次}

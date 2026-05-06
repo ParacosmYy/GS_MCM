@@ -59,7 +59,7 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
 
 \subsection{检验结果}
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{问题三偏差检验结果}
     \label{tab:p3_test}
@@ -86,21 +86,21 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
 
 输出 10\,Hz 轨迹 \textbf{3691 点}（时长 369.0\,s），作为问题四的输入。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/fig_p3_wald_chi2.png}
     \caption{Wald 检验：$\chi^2(2)$ 分布下 $W=2.07$ 远低于临界值 5.991（接受 H$_0$）}
     \label{fig:p3_wald}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.65\textwidth]{figures/fig_p3_bootstrap_scatter.png}
     \caption{Bootstrap 偏差估计散点与 95\% 置信椭圆（椭圆包含原点，支持 H$_0$）}
     \label{fig:p3_bootstrap}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/fig_p3_model_comparison.png}
     \caption{零偏模型 vs 带偏模型：AIC 对比（$\Delta$AIC$=-2.81$，零偏更优）}

@@ -32,14 +32,14 @@
 
 \textbf{方法选型对比}：混合整数线性规划（MILP）可求全局最优解，但变量规模过大（以 $2$\,Hz 网格离散化，$T=600$\,s 对应 $1200$ 时间点 $\times 7$ 任务 $\times 12$ 硬约束 $\approx 10^5$ 个约束），使用 CBC/Gurobi 求解器超时风险大（预试验显示超过 300\,s 仍未收敛）。本文采用\textbf{Savitzky-Golay（SG）滤波 + 贪心优化}：SG 滤波通过局部多项式拟合平滑轨迹，同时保持峰值特征（窗口长度 $w=151$，多项式阶数 $d=3$），噪声衰减 $\sigma_{\text{out}} \approx \sigma_{\text{in}}/\sqrt{w}$；贪心算法按优先级依次为每个任务选择最优时刻（速度最大化），时间复杂度 $O(N \cdot M)$（$N$ 为时间点数，$M$ 为任务数），实测 $1.2$\,s 出解。灵敏度分析表明贪心解质量随 SG 窗口长度单调提升，$w \geq 9$ 后稳定，验证了平滑方案的鲁棒性。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig_method_flowchart.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig_method_flowchart.png}
     \caption{本文方法论流程：四问递进结构与数据流}
     \label{fig:method_flow}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/fig_noise_heatmap.png}
     \caption{三份附件噪声水平热力图（二阶差分估计 $\sigma$，单位 m）}
@@ -50,7 +50,7 @@
 
 图~\ref{fig:eda_traj} 展示了三份附件的轨迹分布。附件1/2 公共时段充分（$>500$\,s），附件3两路时段完全不重叠（方式1 $t\in[469, 814]$\,s，方式2 $t\in[77, 401]$\,s），表明时间偏差 $\Delta\tau \approx 368$\,s。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.48\textwidth]{figures/eda_a1_trajectory.png}
     \includegraphics[width=0.48\textwidth]{figures/eda_a3_trajectory.png}
@@ -61,7 +61,7 @@
 \subsection{整体求解思路}
 本文整体求解思路如图~\ref{fig:framework} 所示。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[node distance=0.9cm and 1.5cm]
         \node[terminal]                              (p)   {题目分析};

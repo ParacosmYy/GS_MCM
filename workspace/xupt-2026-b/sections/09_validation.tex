@@ -4,7 +4,7 @@
 
 每个问题的求解代码均配套独立验证脚本，共 17 项检查全部通过（表~\ref{tab:verify_summary}）。
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{四问验证结果汇总}
     \label{tab:verify_summary}
@@ -22,7 +22,7 @@
 
 对附件2叠加不同水平额外噪声 $\sigma_{\text{add}} \in \{0, 0.5, 1.0, 2.0\}$\,m，重新估计参数：
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{问题二噪声灵敏度}
     \label{tab:sens_noise}
@@ -42,7 +42,7 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
 
 \subsection{SG 窗口灵敏度（问题四）}
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \caption{SG 平滑窗口对问题四任务完成数的影响}
     \label{tab:sens_sg}
@@ -59,7 +59,7 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
 
 窗口从 51 增至 151 时任务数从 1 增至 24，表明平滑程度显著影响可行窗口分布。窗口 101--151 为推荐工作区间，兼顾噪声抑制与轨迹形变控制。
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.48\textwidth]{figures/sensitivity_noise.png}
     \includegraphics[width=0.48\textwidth]{figures/sensitivity_sg_window.png}
@@ -67,7 +67,7 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
     \label{fig:sensitivity}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.55\textwidth]{figures/fig_results_radar.png}
     \caption{三类方法综合性能雷达图（五维度评价）}
