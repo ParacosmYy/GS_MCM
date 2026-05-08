@@ -170,53 +170,40 @@ def generate_flowchart():
 
 
 def generate_noise_heatmap():
-    """
-    Figure 2: Noise Level Heatmap
-    3x2 matrix showing observation noise across attachments and methods
-    """
-    # Data: noise levels (m) from EDA report
+    """噪声热力图（中文版，高级感配色）"""
     data = np.array([
-        [0.0000, 0.0000],  # Attachment 1
-        [0.8239, 0.7966],  # Attachment 2
-        [4.1674, 2.8973]   # Attachment 3
+        [0.0000, 0.0000],
+        [0.8239, 0.7966],
+        [4.1674, 2.8973]
     ])
 
-    fig, ax = plt.subplots(figsize=(8, 5), dpi=DPI)
+    fig, ax = plt.subplots(figsize=(7, 4.5), dpi=DPI)
 
-    # Create heatmap
-    im = ax.imshow(data, cmap='YlOrRd', aspect='auto', vmin=0, vmax=4.5)
+    im = ax.imshow(data, cmap='Blues', aspect='auto', vmin=0, vmax=5.0)
 
-    # Set ticks and labels
     ax.set_xticks(np.arange(2))
     ax.set_yticks(np.arange(3))
-    ax.set_xticklabels(['Method 1', 'Method 2'], fontsize=11)
-    ax.set_yticklabels(['Attachment 1', 'Attachment 2', 'Attachment 3'], fontsize=11)
+    ax.set_xticklabels(['方式 1 (4 Hz)', '方式 2 (5 Hz)'], fontsize=11)
+    ax.set_yticklabels(['附件 1（无噪声）', '附件 2（含噪声）', '附件 3（真实数据）'], fontsize=11)
 
-    # Rotate x labels
-    plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
-
-    # Add colorbar
     cbar = plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    cbar.set_label('Noise Level σ (m)', rotation=270, labelpad=20, fontsize=11)
+    cbar.set_label('噪声水平 σ (m)', rotation=270, labelpad=18, fontsize=11)
 
-    # Annotate cells with values
     for i in range(3):
         for j in range(2):
-            text = ax.text(j, i, f'{data[i, j]:.4f}',
-                          ha="center", va="center", color="black",
-                          fontsize=10, fontweight='bold')
+            color = 'white' if data[i, j] > 2.5 else 'black'
+            ax.text(j, i, f'{data[i, j]:.2f} m',
+                    ha="center", va="center", color=color,
+                    fontsize=12, fontweight='bold')
 
-    # Add grid
     ax.set_xticks(np.arange(2) - 0.5, minor=True)
     ax.set_yticks(np.arange(3) - 0.5, minor=True)
-    ax.grid(which="minor", color="white", linestyle='-', linewidth=2)
+    ax.grid(which="minor", color="white", linestyle='-', linewidth=3)
     ax.tick_params(which="minor", size=0)
 
-    # Title and labels
-    ax.set_xlabel('Observation Method', fontsize=12, fontweight='bold')
-    ax.set_ylabel('Data Source', fontsize=12, fontweight='bold')
-    plt.title('Observation Noise Level Across Attachments',
-              fontsize=13, fontweight='bold', pad=15)
+    ax.set_xlabel('定位方式', fontsize=12)
+    ax.set_ylabel('数据来源', fontsize=12)
+    ax.set_title('三份附件观测噪声水平对比', fontsize=13, fontweight='bold', pad=12)
 
     plt.tight_layout()
     output_path = OUTPUT_DIR / "fig_noise_heatmap.png"
@@ -226,15 +213,15 @@ def generate_noise_heatmap():
 
 
 def generate_radar_chart():
-    """Radar Chart — enhanced version with larger fonts and value annotations"""
-    categories = ['Time\nAccuracy', 'Spatial\nAccuracy', 'Robustness',
-                  'Task\nCompletion', 'Computational\nEfficiency']
+    """雷达图（中文版）"""
+    categories = ['时间\n精度', '空间\n精度', '鲁棒性',
+                  '任务\n完成度', '计算\n效率']
     N = len(categories)
 
     data = {
-        'P1: Spline Alignment': [1.0, 1.0, 0.7, 0.5, 0.95],
-        'P2: Joint Est. + KF':  [0.9, 0.7, 0.85, 0.5, 0.85],
-        'P4: CP-SAT Schedule':  [0.5, 0.6, 0.7, 0.69, 0.99],
+        '问题一：样条对齐': [1.0, 1.0, 0.7, 0.5, 0.95],
+        '问题二：联合估计+KF': [0.9, 0.7, 0.85, 0.5, 0.85],
+        '问题四：CP-SAT 调度': [0.5, 0.6, 0.7, 0.69, 0.99],
     }
 
     angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
@@ -266,7 +253,7 @@ def generate_radar_chart():
     ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=11,
               frameon=True, shadow=True, fancybox=True)
 
-    plt.title('Multi-Dimensional Performance Comparison',
+    plt.title('多维度性能综合评价',
               fontsize=14, fontweight='bold', pad=25, y=1.08)
 
     plt.tight_layout()
