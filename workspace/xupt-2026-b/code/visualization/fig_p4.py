@@ -318,8 +318,8 @@ def plot_velocity_profile(t, v, a):
     ax = axes[1]
     ax.plot(t, a, '-', color='darkred', linewidth=1, label='加速度')
     ax.axhline(A_SHOOT, color='orange', linestyle='--', linewidth=1,
-              label=f'阈值 (a={A_SHOOT} m/s²)')
-    ax.set_ylabel('加速度 (m/s²)')
+              label=f'阈值 (a={A_SHOOT} m/s$^2$)')
+    ax.set_ylabel(r'加速度 (m/s$^2$)')
     ax.set_title('加速度曲线')
     ax.legend(loc='upper right')
     ax.grid(True, alpha=0.3)

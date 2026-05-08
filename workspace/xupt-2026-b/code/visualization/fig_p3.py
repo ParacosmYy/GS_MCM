@@ -148,18 +148,18 @@ def plot_wald_chi2(W_statistic, p_value, save_path):
     x = np.linspace(0, 12, 500)
     y = chi2.pdf(x, df=2)
 
-    ax.plot(x, y, 'b-', linewidth=2, label='χ²(2) 分布')
+    ax.plot(x, y, 'b-', linewidth=2, label=r'$\chi^2(2)$ 分布')
 
     # Critical value at α=0.05
     critical_val = chi2.ppf(0.95, df=2)  # 5.991
     ax.axvline(critical_val, color='red', linestyle='--', linewidth=1.5,
-               label=f'临界值 χ²₀.₀₅(2) = {critical_val:.3f}')
+               label=f'临界值 $\\chi^2_{{0.05}}$(2) = {critical_val:.3f}')
 
     # Fill rejection region
     x_reject = x[x >= critical_val]
     y_reject = chi2.pdf(x_reject, df=2)
     ax.fill_between(x_reject, 0, y_reject, alpha=0.3, color='red',
-                     label='拒绝域 (α=0.05)')
+                     label=r'拒绝域 ($\alpha$=0.05)')
 
     # Mark actual Wald statistic
     ax.axvline(W_statistic, color='green', linestyle='-', linewidth=2,
@@ -176,7 +176,7 @@ def plot_wald_chi2(W_statistic, p_value, save_path):
 
     ax.set_xlabel('Wald 统计量 W', fontsize=11)
     ax.set_ylabel('概率密度', fontsize=11)
-    ax.set_title('系统偏差 Wald 检验\nH₀: (Δx, Δy) = (0, 0)',
+    ax.set_title(r'系统偏差 Wald 检验' + '\n' + r'$H_0$: ($\Delta x$, $\Delta y$) = (0, 0)',
                  fontsize=12, fontweight='bold')
     ax.legend(loc='upper right', frameon=True, shadow=True)
     ax.grid(True, alpha=0.3, linestyle=':', linewidth=0.5)
@@ -202,7 +202,7 @@ def plot_bootstrap_scatter(estimates, dx_hat, dy_hat, save_path):
 
     # Mark null hypothesis origin
     ax.plot(0, 0, 'k+', markersize=15, markeredgewidth=2.5,
-            label='H₀: (0, 0)')
+            label=r'$H_0$: (0, 0)')
     ax.axhline(0, color='gray', linestyle=':', linewidth=1, alpha=0.5)
     ax.axvline(0, color='gray', linestyle=':', linewidth=1, alpha=0.5)
 
@@ -227,9 +227,9 @@ def plot_bootstrap_scatter(estimates, dx_hat, dy_hat, save_path):
                       linestyle='--', label='95% 置信椭圆')
     ax.add_patch(ellipse)
 
-    ax.set_xlabel('Δx (m)', fontsize=11)
-    ax.set_ylabel('Δy (m)', fontsize=11)
-    ax.set_title('偏差估计的 Bootstrap 分布\n(Δx, Δy) (1000 次重采样)',
+    ax.set_xlabel(r'$\Delta x$ (m)', fontsize=11)
+    ax.set_ylabel(r'$\Delta y$ (m)', fontsize=11)
+    ax.set_title(r'偏差估计的 Bootstrap 分布' + '\n' + r'($\Delta x$, $\Delta y$) (1000 次重采样)',
                  fontsize=12, fontweight='bold')
     ax.legend(loc='best', frameon=True, shadow=True)
     ax.grid(True, alpha=0.3, linestyle=':', linewidth=0.5)
@@ -313,7 +313,7 @@ def plot_model_comparison(sse_0, aic_0, k_0, sse_3, aic_3, k_3, save_path):
 
     # Add ΔAIC annotation
     delta_aic = aic_0 - aic_3
-    ax1.annotate(f'ΔAIC = {delta_aic:.2f}\n→ 零偏差模型更优',
+    ax1.annotate(f'$\\Delta$AIC = {delta_aic:.2f}\n→ 零偏差模型更优',
                  xy=(0.5, max(aic_values) * 0.95),
                  xytext=(0.5, max(aic_values) * 1.05),
                  fontsize=11,

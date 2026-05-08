@@ -47,7 +47,7 @@ def generate_flowchart():
     Figure 1: Method Flowchart
     4-step pipeline with rounded rectangles and arrows
     """
-    fig, ax = plt.subplots(figsize=(12, 6), dpi=DPI)
+    fig, ax = plt.subplots(figsize=(14, 7), dpi=DPI)
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 6)
     ax.axis('off')
@@ -89,8 +89,8 @@ def generate_flowchart():
     ]
 
     # Draw steps
-    box_width = 2.0
-    box_height = 1.8
+    box_width = 2.3
+    box_height = 2.0
 
     for step in steps:
         # Main box
@@ -107,12 +107,12 @@ def generate_flowchart():
 
         # Step name (title)
         ax.text(step['x'], step['y'] + 0.35, step['name'],
-                ha='center', va='center', fontsize=13, fontweight='bold',
+                ha='center', va='center', fontsize=15, fontweight='bold',
                 color='white')
 
         # Method description
         ax.text(step['x'], step['y'] - 0.3, step['method'],
-                ha='center', va='center', fontsize=11,
+                ha='center', va='center', fontsize=13,
                 color='white')
 
     # Draw arrows between steps
@@ -137,7 +137,7 @@ def generate_flowchart():
         # Arrow label (data flow)
         mid_x = (x1 + x2) / 2
         ax.text(mid_x, arrow_y + 0.55, steps[i]['output'],
-                ha='center', va='bottom', fontsize=10,
+                ha='center', va='bottom', fontsize=12,
                 bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                          edgecolor='gray', alpha=0.9))
 
@@ -145,7 +145,7 @@ def generate_flowchart():
     ax.annotate('输入：\n附件 1-3\n原始观测',
                 xy=(steps[0]['x'] - box_width/2, arrow_y),
                 xytext=(0.3, arrow_y),
-                fontsize=10, ha='center',
+                fontsize=12, ha='center',
                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
@@ -153,12 +153,12 @@ def generate_flowchart():
     ax.annotate('输出：\n最优任务\n调度方案',
                 xy=(steps[-1]['x'] + box_width/2, arrow_y),
                 xytext=(11.7, arrow_y),
-                fontsize=10, ha='center',
+                fontsize=12, ha='center',
                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
 
-    fig.suptitle('方法论流程：四问递进结构', fontsize=14, fontweight='bold', y=0.95)
+    fig.suptitle('方法论流程：四问递进结构', fontsize=16, fontweight='bold', y=0.95)
 
     plt.tight_layout()
     output_path = OUTPUT_DIR / "fig_method_flowchart.png"
