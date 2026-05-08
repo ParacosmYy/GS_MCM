@@ -34,7 +34,8 @@ plt.rcParams.update({
     'legend.fontsize': 9,
     'figure.titlesize': 13,
     'font.family': 'sans-serif',
-    'font.sans-serif': ['Arial', 'DejaVu Sans'],
+    'font.sans-serif': ['SimHei', 'Microsoft YaHei', 'Arial', 'DejaVu Sans'],
+    'axes.unicode_minus': False,
     'axes.linewidth': 1.0,
     'grid.linewidth': 0.5,
     'lines.linewidth': 1.5,
@@ -54,36 +55,36 @@ def generate_flowchart():
     # Step definitions
     steps = [
         {
-            'name': 'P1: Time Shift\nCalibration',
-            'method': 'Cubic Spline +\n1D Search',
+            'name': '问题一\n时间对齐',
+            'method': '三次样条 +\n一维搜索',
             'x': 1.5,
             'y': 3,
-            'color': '#3498db',  # Blue
+            'color': '#2C3E50',
             'output': 'Δτ*'
         },
         {
-            'name': 'P2: Trajectory\nReconstruction',
-            'method': 'Joint LS +\nKalman Filter',
+            'name': '问题二\n联合融合',
+            'method': '联合估计 +\n卡尔曼滤波',
             'x': 4.5,
             'y': 3,
-            'color': '#2ecc71',  # Green
-            'output': 'traj_10hz_3.csv'
+            'color': '#34495E',
+            'output': '10Hz 轨迹'
         },
         {
-            'name': 'P3: Model\nValidation',
-            'method': 'Wald Test +\nAIC',
+            'name': '问题三\n偏差判定',
+            'method': 'Wald 检验 +\nAIC 准则',
             'x': 7.5,
             'y': 3,
-            'color': '#f39c12',  # Orange
-            'output': 'Model params'
+            'color': '#5D6D7E',
+            'output': '判决 H0'
         },
         {
-            'name': 'P4: Patrol\nScheduling',
-            'method': 'SG Smooth +\nGreedy Schedule',
+            'name': '问题四\n任务调度',
+            'method': 'SG 平滑 +\nCP-SAT',
             'x': 10.5,
             'y': 3,
-            'color': '#e74c3c',  # Red
-            'output': 'Schedule.xlsx'
+            'color': '#717D7E',
+            'output': '25 任务'
         }
     ]
 
@@ -141,26 +142,23 @@ def generate_flowchart():
                          edgecolor='gray', alpha=0.9))
 
     # Input/Output annotations
-    # Input
-    ax.annotate('INPUT:\nAttachment 1-3\n(raw obs.)',
+    ax.annotate('输入：\n附件 1-3\n原始观测',
                 xy=(steps[0]['x'] - box_width/2, arrow_y),
                 xytext=(0.3, arrow_y),
                 fontsize=8, ha='center',
-                bbox=dict(boxstyle='round,pad=0.4', facecolor='#ecf0f1',
+                bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
 
-    # Output
-    ax.annotate('OUTPUT:\nOptimal\npatrol plan',
+    ax.annotate('输出：\n最优任务\n调度方案',
                 xy=(steps[-1]['x'] + box_width/2, arrow_y),
                 xytext=(11.7, arrow_y),
                 fontsize=8, ha='center',
-                bbox=dict(boxstyle='round,pad=0.4', facecolor='#ecf0f1',
+                bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
 
-    # Title
-    fig.suptitle('Integrated Method Flowchart', fontsize=14, fontweight='bold', y=0.95)
+    fig.suptitle('方法论流程：四问递进结构', fontsize=14, fontweight='bold', y=0.95)
 
     plt.tight_layout()
     output_path = OUTPUT_DIR / "fig_method_flowchart.png"
