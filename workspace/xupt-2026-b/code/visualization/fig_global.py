@@ -89,8 +89,8 @@ def generate_flowchart():
     ]
 
     # Draw steps
-    box_width = 1.8
-    box_height = 1.6
+    box_width = 2.0
+    box_height = 1.8
 
     for step in steps:
         # Main box
@@ -106,14 +106,14 @@ def generate_flowchart():
         ax.add_patch(box)
 
         # Step name (title)
-        ax.text(step['x'], step['y'] + 0.4, step['name'],
-                ha='center', va='center', fontsize=10, fontweight='bold',
+        ax.text(step['x'], step['y'] + 0.35, step['name'],
+                ha='center', va='center', fontsize=13, fontweight='bold',
                 color='white')
 
         # Method description
-        ax.text(step['x'], step['y'] - 0.2, step['method'],
-                ha='center', va='center', fontsize=8.5,
-                color='white', style='italic')
+        ax.text(step['x'], step['y'] - 0.3, step['method'],
+                ha='center', va='center', fontsize=11,
+                color='white')
 
     # Draw arrows between steps
     arrow_y = 3
@@ -136,8 +136,8 @@ def generate_flowchart():
 
         # Arrow label (data flow)
         mid_x = (x1 + x2) / 2
-        ax.text(mid_x, arrow_y + 0.5, steps[i]['output'],
-                ha='center', va='bottom', fontsize=8,
+        ax.text(mid_x, arrow_y + 0.55, steps[i]['output'],
+                ha='center', va='bottom', fontsize=10,
                 bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                          edgecolor='gray', alpha=0.9))
 
@@ -145,7 +145,7 @@ def generate_flowchart():
     ax.annotate('输入：\n附件 1-3\n原始观测',
                 xy=(steps[0]['x'] - box_width/2, arrow_y),
                 xytext=(0.3, arrow_y),
-                fontsize=8, ha='center',
+                fontsize=10, ha='center',
                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
@@ -153,7 +153,7 @@ def generate_flowchart():
     ax.annotate('输出：\n最优任务\n调度方案',
                 xy=(steps[-1]['x'] + box_width/2, arrow_y),
                 xytext=(11.7, arrow_y),
-                fontsize=8, ha='center',
+                fontsize=10, ha='center',
                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#F2F3F4',
                          edgecolor='black', linewidth=1.5),
                 arrowprops=dict(arrowstyle='->', lw=2, color='black'))
