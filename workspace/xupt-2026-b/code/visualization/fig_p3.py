@@ -41,7 +41,8 @@ plt.rcParams.update({
     'legend.fontsize': 9,
     'figure.titlesize': 13,
     'font.family': 'sans-serif',
-    'font.sans-serif': ['Arial', 'DejaVu Sans'],
+    'font.sans-serif': ['SimHei', 'Microsoft YaHei', 'DejaVu Sans'],
+    'axes.unicode_minus': False,
 })
 
 
@@ -147,22 +148,22 @@ def plot_wald_chi2(W_statistic, p_value, save_path):
     x = np.linspace(0, 12, 500)
     y = chi2.pdf(x, df=2)
 
-    ax.plot(x, y, 'b-', linewidth=2, label='χ²(2) distribution')
+    ax.plot(x, y, 'b-', linewidth=2, label='χ²(2) 分布')
 
     # Critical value at α=0.05
     critical_val = chi2.ppf(0.95, df=2)  # 5.991
     ax.axvline(critical_val, color='red', linestyle='--', linewidth=1.5,
-               label=f'Critical value χ²₀.₀₅(2) = {critical_val:.3f}')
+               label=f'临界值 χ²₀.₀₅(2) = {critical_val:.3f}')
 
     # Fill rejection region
     x_reject = x[x >= critical_val]
     y_reject = chi2.pdf(x_reject, df=2)
     ax.fill_between(x_reject, 0, y_reject, alpha=0.3, color='red',
-                     label='Rejection region (α=0.05)')
+                     label='拒绝域 (α=0.05)')
 
     # Mark actual Wald statistic
     ax.axvline(W_statistic, color='green', linestyle='-', linewidth=2,
-               label=f'Observed W = {W_statistic:.3f}')
+               label=f'观测 W = {W_statistic:.3f}')
 
     # Annotate Wald statistic with arrow
     y_max = chi2.pdf(W_statistic, df=2)
@@ -173,9 +174,9 @@ def plot_wald_chi2(W_statistic, p_value, save_path):
                 bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', alpha=0.7),
                 arrowprops=dict(arrowstyle='->', lw=1.5, color='green'))
 
-    ax.set_xlabel('Wald Statistic W', fontsize=11)
-    ax.set_ylabel('Probability Density', fontsize=11)
-    ax.set_title('Wald Test for Systematic Bias\nH₀: (Δx, Δy) = (0, 0)',
+    ax.set_xlabel('Wald 统计量 W', fontsize=11)
+    ax.set_ylabel('概率密度', fontsize=11)
+    ax.set_title('系统偏差 Wald 检验\nH₀: (Δx, Δy) = (0, 0)',
                  fontsize=12, fontweight='bold')
     ax.legend(loc='upper right', frameon=True, shadow=True)
     ax.grid(True, alpha=0.3, linestyle=':', linewidth=0.5)
@@ -197,7 +198,7 @@ def plot_bootstrap_scatter(estimates, dx_hat, dy_hat, save_path):
     # Scatter plot of bootstrap estimates
     ax.scatter(estimates[:, 0], estimates[:, 1],
                alpha=0.5, s=30, c='steelblue', edgecolors='navy', linewidth=0.5,
-               label=f'Bootstrap samples (n={len(estimates)})')
+               label=f'Bootstrap 样本 (n={len(estimates)})')
 
     # Mark null hypothesis origin
     ax.plot(0, 0, 'k+', markersize=15, markeredgewidth=2.5,
@@ -207,7 +208,7 @@ def plot_bootstrap_scatter(estimates, dx_hat, dy_hat, save_path):
 
     # Mark point estimate
     ax.plot(dx_hat, dy_hat, 'r*', markersize=20, markeredgewidth=1.5,
-            label=f'Point estimate: ({dx_hat:.3f}, {dy_hat:.3f})')
+            label=f'点估计: ({dx_hat:.3f}, {dy_hat:.3f})')
 
     # Draw 95% confidence ellipse
     mean = estimates.mean(axis=0)
@@ -223,12 +224,12 @@ def plot_bootstrap_scatter(estimates, dx_hat, dy_hat, save_path):
 
     ellipse = Ellipse(xy=mean, width=width, height=height, angle=angle,
                       edgecolor='red', facecolor='none', linewidth=2.5,
-                      linestyle='--', label='95% confidence ellipse')
+                      linestyle='--', label='95% 置信椭圆')
     ax.add_patch(ellipse)
 
     ax.set_xlabel('Δx (m)', fontsize=11)
     ax.set_ylabel('Δy (m)', fontsize=11)
-    ax.set_title('Bootstrap Distribution of Bias Estimates\n(Δx, Δy) from 150 Resamples',
+    ax.set_title('偏差估计的 Bootstrap 分布\n(Δx, Δy) (1000 次重采样)',
                  fontsize=12, fontweight='bold')
     ax.legend(loc='best', frameon=True, shadow=True)
     ax.grid(True, alpha=0.3, linestyle=':', linewidth=0.5)
@@ -254,24 +255,24 @@ def plot_model_comparison(sse_0, aic_0, k_0, sse_3, aic_3, k_3, save_path):
     """
     fig, ax1 = plt.subplots(figsize=(9, 6))
 
-    models = ['Zero-bias\nModel', 'Biased\nModel']
+    models = ['零偏差\n模型', '有偏差\n模型']
     x_pos = np.arange(len(models))
     width = 0.25
 
     # SSE bars (left y-axis)
     sse_values = [sse_0, sse_3]
     bars1 = ax1.bar(x_pos - width, sse_values, width,
-                    label='SSE (Sum of Squared Errors)',
+                    label='SSE (残差平方和)',
                     color='lightcoral', edgecolor='darkred', linewidth=1.5)
 
     # AIC bars (left y-axis)
     aic_values = [aic_0, aic_3]
     bars2 = ax1.bar(x_pos, aic_values, width,
-                    label='AIC (Akaike Information Criterion)',
+                    label='AIC (赤池信息准则)',
                     color='skyblue', edgecolor='darkblue', linewidth=1.5)
 
-    ax1.set_xlabel('Model Type', fontsize=11, fontweight='bold')
-    ax1.set_ylabel('SSE / AIC Value', fontsize=11, color='black')
+    ax1.set_xlabel('模型类型', fontsize=11, fontweight='bold')
+    ax1.set_ylabel('SSE / AIC 值', fontsize=11, color='black')
     ax1.set_xticks(x_pos)
     ax1.set_xticklabels(models, fontsize=10, fontweight='bold')
     ax1.tick_params(axis='y', labelcolor='black')
@@ -295,10 +296,10 @@ def plot_model_comparison(sse_0, aic_0, k_0, sse_3, aic_3, k_3, save_path):
     ax2 = ax1.twinx()
     k_values = [k_0, k_3]
     bars3 = ax2.bar(x_pos + width, k_values, width,
-                    label='Number of Parameters (k)',
+                    label='参数个数 (k)',
                     color='lightgreen', edgecolor='darkgreen', linewidth=1.5)
 
-    ax2.set_ylabel('Number of Parameters (k)', fontsize=11, color='darkgreen')
+    ax2.set_ylabel('参数个数 (k)', fontsize=11, color='darkgreen')
     ax2.tick_params(axis='y', labelcolor='darkgreen')
     ax2.set_ylim(0, max(k_values) * 1.5)
 
@@ -312,7 +313,7 @@ def plot_model_comparison(sse_0, aic_0, k_0, sse_3, aic_3, k_3, save_path):
 
     # Add ΔAIC annotation
     delta_aic = aic_0 - aic_3
-    ax1.annotate(f'ΔAIC = {delta_aic:.2f}\n→ Zero-bias model preferred',
+    ax1.annotate(f'ΔAIC = {delta_aic:.2f}\n→ 零偏差模型更优',
                  xy=(0.5, max(aic_values) * 0.95),
                  xytext=(0.5, max(aic_values) * 1.05),
                  fontsize=11,
@@ -322,7 +323,7 @@ def plot_model_comparison(sse_0, aic_0, k_0, sse_3, aic_3, k_3, save_path):
                  arrowprops=dict(arrowstyle='->', lw=2, color='orange'))
 
     # Title
-    ax1.set_title('Model Comparison: Zero-bias vs Biased Model\nLower AIC Indicates Better Fit',
+    ax1.set_title('模型比较：零偏差 vs 有偏差\nAIC 越小拟合越好',
                   fontsize=12, fontweight='bold', pad=20)
 
     # Combine legends

@@ -16,6 +16,8 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use('Agg')  # 无 GUI backend
+matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -180,15 +182,15 @@ def sensitivity_noise():
     df = pd.DataFrame(results)
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    fig.suptitle('Problem 2 Noise Sensitivity Analysis', fontsize=16, fontweight='bold')
+    fig.suptitle('问题二 噪声灵敏度分析', fontsize=16, fontweight='bold')
 
     # 子图 1: Δτ
     ax = axes[0, 0]
     ax.plot(df["sigma_add"], df["dtau"], 'o-', linewidth=2, markersize=8)
-    ax.axhline(baseline["dtau"], color='red', linestyle='--', label='Baseline')
-    ax.set_xlabel('Additional Noise σ_add (m)', fontsize=12)
+    ax.axhline(baseline["dtau"], color='red', linestyle='--', label='基线')
+    ax.set_xlabel('附加噪声 σ_add (m)', fontsize=12)
     ax.set_ylabel('Δτ (s)', fontsize=12)
-    ax.set_title('Time Offset Estimation', fontsize=13, fontweight='bold')
+    ax.set_title('时间偏差估计', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
@@ -198,28 +200,28 @@ def sensitivity_noise():
     ax.plot(df["sigma_add"], df["dy"], 's-', linewidth=2, markersize=8, label='Δy')
     ax.axhline(baseline["dx"], color='red', linestyle='--', alpha=0.5)
     ax.axhline(baseline["dy"], color='blue', linestyle='--', alpha=0.5)
-    ax.set_xlabel('Additional Noise σ_add (m)', fontsize=12)
-    ax.set_ylabel('Spatial Offset (m)', fontsize=12)
-    ax.set_title('Spatial Bias Estimation', fontsize=13, fontweight='bold')
+    ax.set_xlabel('附加噪声 σ_add (m)', fontsize=12)
+    ax.set_ylabel('空间偏移 (m)', fontsize=12)
+    ax.set_title('空间偏差估计', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
     # 子图 3: RMSE
     ax = axes[1, 0]
     ax.plot(df["sigma_add"], df["rmse"], 'o-', linewidth=2, markersize=8, color='green')
-    ax.axhline(baseline["rmse"], color='red', linestyle='--', label='Baseline')
-    ax.set_xlabel('Additional Noise σ_add (m)', fontsize=12)
+    ax.axhline(baseline["rmse"], color='red', linestyle='--', label='基线')
+    ax.set_xlabel('附加噪声 σ_add (m)', fontsize=12)
     ax.set_ylabel('RMSE (m)', fontsize=12)
-    ax.set_title('Alignment RMSE', fontsize=13, fontweight='bold')
+    ax.set_title('对齐 RMSE', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
     # 子图 4: σ_est
     ax = axes[1, 1]
     ax.plot(df["sigma_add"], df["sigma_est"], 'o-', linewidth=2, markersize=8, color='purple')
-    ax.set_xlabel('Additional Noise σ_add (m)', fontsize=12)
-    ax.set_ylabel('Estimated σ (m)', fontsize=12)
-    ax.set_title('Estimated Noise Level', fontsize=13, fontweight='bold')
+    ax.set_xlabel('附加噪声 σ_add (m)', fontsize=12)
+    ax.set_ylabel('估计 σ (m)', fontsize=12)
+    ax.set_title('估计噪声水平', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
@@ -410,39 +412,39 @@ def sensitivity_sg_window():
     df = pd.DataFrame(results)
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    fig.suptitle('Problem 4 SG Window Sensitivity Analysis', fontsize=16, fontweight='bold')
+    fig.suptitle('问题四 SG 窗口灵敏度分析', fontsize=16, fontweight='bold')
 
     # 子图 1: 任务完成数
     ax = axes[0, 0]
-    ax.plot(df["window"], df["n_shoot"], 'o-', linewidth=2, markersize=8, label='Shoot')
-    ax.plot(df["window"], df["n_photo"], 's-', linewidth=2, markersize=8, label='Photo')
-    ax.plot(df["window"], df["total"], '^-', linewidth=2, markersize=8, label='Total')
-    ax.set_xlabel('SG Window Size', fontsize=12)
-    ax.set_ylabel('Task Count', fontsize=12)
-    ax.set_title('Task Completion vs Window Size', fontsize=13, fontweight='bold')
+    ax.plot(df["window"], df["n_shoot"], 'o-', linewidth=2, markersize=8, label='射击')
+    ax.plot(df["window"], df["n_photo"], 's-', linewidth=2, markersize=8, label='拍照')
+    ax.plot(df["window"], df["total"], '^-', linewidth=2, markersize=8, label='总计')
+    ax.set_xlabel('SG 窗口大小', fontsize=12)
+    ax.set_ylabel('任务数', fontsize=12)
+    ax.set_title('任务完成数 vs 窗口大小', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
     # 子图 2: 速度统计
     ax = axes[0, 1]
-    ax.plot(df["window"], df["v_mean"], 'o-', linewidth=2, markersize=8, label='Mean')
-    ax.plot(df["window"], df["v_max"], 's-', linewidth=2, markersize=8, label='Max')
-    ax.axhline(V_SHOOT, color='red', linestyle='--', label='Shoot Limit', alpha=0.7)
-    ax.axhline(V_PHOTO, color='blue', linestyle='--', label='Photo Limit', alpha=0.7)
-    ax.set_xlabel('SG Window Size', fontsize=12)
-    ax.set_ylabel('Velocity (m/s)', fontsize=12)
-    ax.set_title('Velocity Statistics', fontsize=13, fontweight='bold')
+    ax.plot(df["window"], df["v_mean"], 'o-', linewidth=2, markersize=8, label='平均')
+    ax.plot(df["window"], df["v_max"], 's-', linewidth=2, markersize=8, label='最大')
+    ax.axhline(V_SHOOT, color='red', linestyle='--', label='射击限制', alpha=0.7)
+    ax.axhline(V_PHOTO, color='blue', linestyle='--', label='拍照限制', alpha=0.7)
+    ax.set_xlabel('SG 窗口大小', fontsize=12)
+    ax.set_ylabel('速度 (m/s)', fontsize=12)
+    ax.set_title('速度统计', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
     # 子图 3: 加速度统计
     ax = axes[1, 0]
-    ax.plot(df["window"], df["a_mean"], 'o-', linewidth=2, markersize=8, label='Mean')
-    ax.plot(df["window"], df["a_max"], 's-', linewidth=2, markersize=8, label='Max')
-    ax.axhline(A_SHOOT, color='red', linestyle='--', label='Limit', alpha=0.7)
-    ax.set_xlabel('SG Window Size', fontsize=12)
-    ax.set_ylabel('Acceleration (m/s²)', fontsize=12)
-    ax.set_title('Acceleration Statistics', fontsize=13, fontweight='bold')
+    ax.plot(df["window"], df["a_mean"], 'o-', linewidth=2, markersize=8, label='平均')
+    ax.plot(df["window"], df["a_max"], 's-', linewidth=2, markersize=8, label='最大')
+    ax.axhline(A_SHOOT, color='red', linestyle='--', label='限制', alpha=0.7)
+    ax.set_xlabel('SG 窗口大小', fontsize=12)
+    ax.set_ylabel('加速度 (m/s²)', fontsize=12)
+    ax.set_title('加速度统计', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
@@ -450,11 +452,11 @@ def sensitivity_sg_window():
     ax = axes[1, 1]
     width = 8
     x_pos = df["window"].to_numpy()
-    ax.bar(x_pos - width/2, df["n_shoot"], width, label='Shoot', alpha=0.8)
-    ax.bar(x_pos + width/2, df["n_photo"], width, label='Photo', alpha=0.8)
-    ax.set_xlabel('SG Window Size', fontsize=12)
-    ax.set_ylabel('Task Count', fontsize=12)
-    ax.set_title('Task Type Distribution', fontsize=13, fontweight='bold')
+    ax.bar(x_pos - width/2, df["n_shoot"], width, label='射击', alpha=0.8)
+    ax.bar(x_pos + width/2, df["n_photo"], width, label='拍照', alpha=0.8)
+    ax.set_xlabel('SG 窗口大小', fontsize=12)
+    ax.set_ylabel('任务数', fontsize=12)
+    ax.set_title('任务类型分布', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3, axis='y')
     ax.legend()
 

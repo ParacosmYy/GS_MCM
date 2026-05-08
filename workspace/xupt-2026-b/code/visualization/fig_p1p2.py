@@ -26,8 +26,9 @@ from scipy.stats import gaussian_kde
 # Set professional style
 plt.style.use('seaborn-v0_8-whitegrid')
 plt.rcParams.update({
-    'font.family': 'serif',
-    'font.serif': ['Times New Roman', 'DejaVu Serif'],
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['SimHei', 'Microsoft YaHei', 'DejaVu Sans'],
+    'axes.unicode_minus': False,
     'font.size': 10,
     'axes.labelsize': 11,
     'axes.titlesize': 12,
@@ -119,22 +120,22 @@ def fig1_alignment():
 
     # Left: Before alignment
     ax = axes[0]
-    ax.plot(x1_before, y1_before, 'b-', linewidth=1.5, label='Method 1 (4Hz)', alpha=0.8)
-    ax.plot(x2_before, y2_before, 'r-', linewidth=1.5, label='Method 2 (5Hz)', alpha=0.8)
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
-    ax.set_title(r'Before Alignment ($\Delta\tau$ unknown)')
+    ax.plot(x1_before, y1_before, 'b-', linewidth=1.5, label='方式 1 (4Hz)', alpha=0.8)
+    ax.plot(x2_before, y2_before, 'r-', linewidth=1.5, label='方式 2 (5Hz)', alpha=0.8)
+    ax.set_xlabel('X 坐标 (m)')
+    ax.set_ylabel('Y 坐标 (m)')
+    ax.set_title(r'对齐前 ($\Delta\tau$ unknown)')
     ax.legend(loc='best')
     ax.set_aspect('equal', adjustable='datalim')
     ax.grid(True, alpha=0.3)
 
     # Right: After alignment
     ax = axes[1]
-    ax.plot(x1_after, y1_after, 'b-', linewidth=2, label='Method 1', alpha=0.6)
-    ax.plot(x2_after, y2_after, 'r--', linewidth=2, label='Method 2 (aligned)', alpha=0.6)
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
-    ax.set_title(f'After Alignment ($\\Delta\\tau$={delta_tau_opt:.2f}s, RMSE={rmse:.2e}m)')
+    ax.plot(x1_after, y1_after, 'b-', linewidth=2, label='方式 1', alpha=0.6)
+    ax.plot(x2_after, y2_after, 'r--', linewidth=2, label='方式 2 (已对齐)', alpha=0.6)
+    ax.set_xlabel('X 坐标 (m)')
+    ax.set_ylabel('Y 坐标 (m)')
+    ax.set_title(f'对齐后 ($\\Delta\\tau$={delta_tau_opt:.2f}s, RMSE={rmse:.2e}m)')
     ax.legend(loc='best')
     ax.set_aspect('equal', adjustable='datalim')
     ax.grid(True, alpha=0.3)
@@ -183,9 +184,9 @@ def fig2_cost_landscape():
     fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
 
     # Log scale for better visualization
-    ax.plot(delta_tau_range, np.log10(costs), 'b-', linewidth=2, label='Cost landscape')
+    ax.plot(delta_tau_range, np.log10(costs), 'b-', linewidth=2, label='代价函数')
     ax.plot(delta_tau_opt, np.log10(cost_opt), 'ro', markersize=10,
-            label=f'Optimal: $\\Delta\\tau^*$={delta_tau_opt:.2f}s', zorder=5)
+            label=f'最优: $\\Delta\\tau^*$={delta_tau_opt:.2f}s', zorder=5)
 
     # Annotation
     ax.annotate(f'$\\Delta\\tau^*$={delta_tau_opt:.2f}s',
@@ -194,9 +195,9 @@ def fig2_cost_landscape():
                 arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
                 fontsize=11, color='red')
 
-    ax.set_xlabel(r'Time Offset $\Delta\tau$ (s)')
-    ax.set_ylabel(r'$\log_{10}$(Sum of Squared Error)')
-    ax.set_title('Cost Function Landscape for Time Alignment (Problem 1)')
+    ax.set_xlabel(r'时间偏移 $\Delta\tau$ (s)')
+    ax.set_ylabel(r'$\log_{10}$(残差平方和)')
+    ax.set_title('问题一：时间对齐代价函数曲面')
     ax.legend(loc='best')
     ax.grid(True, alpha=0.3)
 
@@ -268,25 +269,25 @@ def fig3_residual_heatmap():
 
         # Mean point
         ax.plot(mean_res_x, mean_res_y, 'r*', markersize=15,
-                label=f'Mean: ({mean_res_x:.3f}, {mean_res_y:.3f})', zorder=5)
+                label=f'均值: ({mean_res_x:.3f}, {mean_res_y:.3f})', zorder=5)
 
         # Ellipse showing ±1σ
         from matplotlib.patches import Ellipse
         ellipse = Ellipse((mean_res_x, mean_res_y),
                           width=2*std_res_x, height=2*std_res_y,
                           edgecolor='red', facecolor='none', linewidth=2,
-                          linestyle='--', label=r'$\pm 1\sigma$ ellipse')
+                          linestyle='--', label=r'$\pm 1\sigma$ 椭圆')
         ax.add_patch(ellipse)
 
         # Colorbar
         cbar = plt.colorbar(contourf, ax=ax)
-        cbar.set_label('Probability Density', rotation=270, labelpad=20)
+        cbar.set_label('概率密度', rotation=270, labelpad=20)
 
         ax.axhline(0, color='k', linestyle='--', linewidth=0.8, alpha=0.5)
         ax.axvline(0, color='k', linestyle='--', linewidth=0.8, alpha=0.5)
-        ax.set_xlabel('X Residual (m)')
-        ax.set_ylabel('Y Residual (m)')
-        ax.set_title('2D Density Heatmap of Alignment Residuals (Problem 2)')
+        ax.set_xlabel('X 残差 (m)')
+        ax.set_ylabel('Y 残差 (m)')
+        ax.set_title('问题二：对齐残差二维密度分布')
         ax.legend(loc='best')
         ax.grid(True, alpha=0.3)
         ax.set_aspect('equal', adjustable='box')
@@ -304,16 +305,16 @@ def fig3_residual_heatmap():
         fig, ax = plt.subplots(figsize=(10, 8), dpi=200)
 
         h = ax.hist2d(res_x, res_y, bins=50, cmap='viridis', cmin=1)
-        plt.colorbar(h[3], ax=ax, label='Count')
+        plt.colorbar(h[3], ax=ax, label='计数')
 
         ax.plot(mean_res_x, mean_res_y, 'r*', markersize=15,
-                label=f'Mean: ({mean_res_x:.3f}, {mean_res_y:.3f})', zorder=5)
+                label=f'均值: ({mean_res_x:.3f}, {mean_res_y:.3f})', zorder=5)
 
         ax.axhline(0, color='k', linestyle='--', linewidth=0.8)
         ax.axvline(0, color='k', linestyle='--', linewidth=0.8)
-        ax.set_xlabel('X Residual (m)')
-        ax.set_ylabel('Y Residual (m)')
-        ax.set_title('2D Histogram of Alignment Residuals (Problem 2)')
+        ax.set_xlabel('X 残差 (m)')
+        ax.set_ylabel('Y 残差 (m)')
+        ax.set_title('问题二：对齐残差二维直方图')
         ax.legend(loc='best')
         ax.grid(True, alpha=0.3)
         ax.set_aspect('equal', adjustable='box')
@@ -365,26 +366,26 @@ def fig4_kf_innovation():
 
     # Top: X innovation
     ax = axes[0]
-    ax.plot(t_grid, innov_x, 'b-', linewidth=0.8, alpha=0.7, label='Innovation (X)')
+    ax.plot(t_grid, innov_x, 'b-', linewidth=0.8, alpha=0.7, label='新息 (X)')
     ax.axhline(0, color='k', linestyle='-', linewidth=1, alpha=0.5)
-    ax.axhline(3*sigma_x, color='r', linestyle='--', linewidth=1.5, label=r'$\pm 3\sigma$ bound')
+    ax.axhline(3*sigma_x, color='r', linestyle='--', linewidth=1.5, label=r'$\pm 3\sigma$ 界')
     ax.axhline(-3*sigma_x, color='r', linestyle='--', linewidth=1.5)
     ax.fill_between(t_grid, -3*sigma_x, 3*sigma_x, color='red', alpha=0.1)
-    ax.set_ylabel('Innovation X (m)')
-    ax.set_title(f'KF Innovation Sequence - X Component ($\\sigma_x$={sigma_x:.3f}m)')
+    ax.set_ylabel('新息 X (m)')
+    ax.set_title(f'KF 新息序列 - X 分量 ($\\sigma_x$={sigma_x:.3f}m)')
     ax.legend(loc='best')
     ax.grid(True, alpha=0.3)
 
     # Bottom: Y innovation
     ax = axes[1]
-    ax.plot(t_grid, innov_y, 'g-', linewidth=0.8, alpha=0.7, label='Innovation (Y)')
+    ax.plot(t_grid, innov_y, 'g-', linewidth=0.8, alpha=0.7, label='新息 (Y)')
     ax.axhline(0, color='k', linestyle='-', linewidth=1, alpha=0.5)
-    ax.axhline(3*sigma_y, color='r', linestyle='--', linewidth=1.5, label=r'$\pm 3\sigma$ bound')
+    ax.axhline(3*sigma_y, color='r', linestyle='--', linewidth=1.5, label=r'$\pm 3\sigma$ 界')
     ax.axhline(-3*sigma_y, color='r', linestyle='--', linewidth=1.5)
     ax.fill_between(t_grid, -3*sigma_y, 3*sigma_y, color='red', alpha=0.1)
-    ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Innovation Y (m)')
-    ax.set_title(f'KF Innovation Sequence - Y Component ($\\sigma_y$={sigma_y:.3f}m)')
+    ax.set_xlabel('时间 (s)')
+    ax.set_ylabel('新息 Y (m)')
+    ax.set_title(f'KF 新息序列 - Y 分量 ($\\sigma_y$={sigma_y:.3f}m)')
     ax.legend(loc='best')
     ax.grid(True, alpha=0.3)
 

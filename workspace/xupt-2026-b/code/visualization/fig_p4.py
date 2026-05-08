@@ -37,6 +37,8 @@ PREP_PHOTO = 0.5
 
 # Styling
 DPI = 200
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.labelsize'] = 11
 plt.rcParams['axes.titlesize'] = 12
@@ -159,7 +161,7 @@ def plot_mission_map(t, x, y, shoot_targets, photo_targets, results):
     lc.set_clim(0, 5)
     ax.add_collection(lc)
     cbar = plt.colorbar(lc, ax=ax, shrink=0.6, pad=0.02)
-    cbar.set_label('Speed (m/s)', fontsize=10)
+    cbar.set_label('速度 (m/s)', fontsize=10)
 
     # Plot all targets
     shoot_ids = [t['id'] for t in shoot_targets]
@@ -220,22 +222,22 @@ def plot_mission_map(t, x, y, shoot_targets, photo_targets, results):
     # Custom legend
     from matplotlib.lines import Line2D
     legend_elements = [
-        Line2D([0], [0], color='gray', linewidth=2, alpha=0.4, label='Robot trajectory'),
+        Line2D([0], [0], color='gray', linewidth=2, alpha=0.4, label='机器人轨迹'),
         Line2D([0], [0], marker='^', color='w', markerfacecolor='red',
-               markersize=8, label='Shooting target'),
+               markersize=8, label='射击目标'),
         Line2D([0], [0], marker='o', color='w', markerfacecolor='blue',
-               markersize=8, label='Photo target'),
+               markersize=8, label='拍照目标'),
         Line2D([0], [0], marker='^', color='w', markerfacecolor='green',
-               markersize=10, label='Shooting completed'),
+               markersize=10, label='射击完成'),
         Line2D([0], [0], marker='o', color='w', markerfacecolor='none',
                markeredgecolor='green', markersize=10, markeredgewidth=2,
-               label='Photo completed'),
+               label='拍照完成'),
     ]
     ax.legend(handles=legend_elements, loc='best')
 
     ax.set_xlabel('X (m)', fontsize=11)
     ax.set_ylabel('Y (m)', fontsize=11)
-    ax.set_title('Mission Map: Trajectory and Target Execution', fontsize=13, weight='bold')
+    ax.set_title('任务地图：轨迹与目标执行情况', fontsize=13, weight='bold')
     ax.set_aspect('equal')
     ax.grid(True, alpha=0.2, linestyle='--')
 
@@ -273,8 +275,8 @@ def plot_gantt_chart(results):
     ax.set_yticks(range(n_tasks))
     ax.set_yticklabels([f"{r['target_id']} ({('S' if '射' in str(r['task']) or str(r['target_id']).startswith('S') else 'P')})"
                         for r in valid], fontsize=9)
-    ax.set_xlabel('Time (s)', fontsize=11)
-    ax.set_title(f'Task Execution Timeline ({n_tasks} Tasks)', fontsize=13, weight='bold')
+    ax.set_xlabel('时间 (s)', fontsize=11)
+    ax.set_title(f'任务执行时间线 ({n_tasks} Tasks)', fontsize=13, weight='bold')
     ax.grid(True, axis='x', alpha=0.25, linestyle='--')
     ax.grid(True, axis='y', alpha=0.1)
     ax.invert_yaxis()
@@ -282,8 +284,8 @@ def plot_gantt_chart(results):
 
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor=colors['shoot'], alpha=0.85, label=f'Shooting ({sum(1 for r in valid if "射" in str(r["task"]) or str(r["target_id"]).startswith("S"))})'),
-        Patch(facecolor=colors['photo'], alpha=0.85, label=f'Photo ({sum(1 for r in valid if not ("射" in str(r["task"]) or str(r["target_id"]).startswith("S")))})'),
+        Patch(facecolor=colors['shoot'], alpha=0.85, label=f'射击 ({sum(1 for r in valid if "射" in str(r["task"]) or str(r["target_id"]).startswith("S"))})'),
+        Patch(facecolor=colors['photo'], alpha=0.85, label=f'拍照 ({sum(1 for r in valid if not ("射" in str(r["task"]) or str(r["target_id"]).startswith("S")))})'),
     ]
     ax.legend(handles=legend_elements, loc='lower right', fontsize=10, framealpha=0.9)
 
@@ -302,23 +304,23 @@ def plot_velocity_profile(t, v, a):
 
     # Velocity plot
     ax = axes[0]
-    ax.plot(t, v, '-', color='darkblue', linewidth=1, label='Velocity')
+    ax.plot(t, v, '-', color='darkblue', linewidth=1, label='速度')
     ax.axhline(V_SHOOT, color='red', linestyle='--', linewidth=1,
-              label=f'Shooting threshold (v={V_SHOOT} m/s)')
+              label=f'射击阈值 (v={V_SHOOT} m/s)')
     ax.axhline(V_PHOTO, color='blue', linestyle='--', linewidth=1,
-              label=f'Photo threshold (v={V_PHOTO} m/s)')
-    ax.set_ylabel('Velocity (m/s)')
-    ax.set_title('Velocity Profile')
+              label=f'拍照阈值 (v={V_PHOTO} m/s)')
+    ax.set_ylabel('速度 (m/s)')
+    ax.set_title('速度曲线')
     ax.legend(loc='upper right')
     ax.grid(True, alpha=0.3)
 
     # Acceleration plot
     ax = axes[1]
-    ax.plot(t, a, '-', color='darkred', linewidth=1, label='Acceleration')
+    ax.plot(t, a, '-', color='darkred', linewidth=1, label='加速度')
     ax.axhline(A_SHOOT, color='orange', linestyle='--', linewidth=1,
-              label=f'Threshold (a={A_SHOOT} m/s²)')
-    ax.set_ylabel('Acceleration (m/s²)')
-    ax.set_title('Acceleration Profile')
+              label=f'阈值 (a={A_SHOOT} m/s²)')
+    ax.set_ylabel('加速度 (m/s²)')
+    ax.set_title('加速度曲线')
     ax.legend(loc='upper right')
     ax.grid(True, alpha=0.3)
 
@@ -336,9 +338,9 @@ def plot_velocity_profile(t, v, a):
         if photo_feasible[i]:
             ax.axvline(t[i], color='blue', alpha=0.1, linewidth=0.5)
 
-    ax.set_ylabel('Feasibility')
-    ax.set_xlabel('Time (s)')
-    ax.set_title('Task Feasibility Windows')
+    ax.set_ylabel('可行性')
+    ax.set_xlabel('时间 (s)')
+    ax.set_title('任务可行窗口')
     ax.set_ylim(-0.5, 1.5)
     ax.set_yticks([0, 1])
     ax.set_yticklabels(['', ''])
@@ -346,8 +348,8 @@ def plot_velocity_profile(t, v, a):
     # Custom legend
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor='red', alpha=0.3, label='Shooting feasible'),
-        Patch(facecolor='blue', alpha=0.3, label='Photo feasible')
+        Patch(facecolor='red', alpha=0.3, label='射击可行'),
+        Patch(facecolor='blue', alpha=0.3, label='拍照可行')
     ]
     ax.legend(handles=legend_elements, loc='upper right')
     ax.grid(True, alpha=0.3)
@@ -389,10 +391,10 @@ def plot_score_pie(results, shoot_targets, photo_targets):
 
     # Data for pie chart
     labels = [
-        f'Shooting completed\n({n_shoot_done} targets)',
-        f'Shooting incomplete\n({n_shoot_undone} targets)',
-        f'Photo completed\n({n_photo_tasks} tasks, {n_photo_done} targets)',
-        f'Photo incomplete\n({n_photo_undone} targets)'
+        f'射击完成\n({n_shoot_done}个目标)',
+        f'射击未完成\n({n_shoot_undone}个目标)',
+        f'拍照完成\n({n_photo_tasks}项任务，{n_photo_done}个目标)',
+        f'拍照未完成\n({n_photo_undone}个目标)'
     ]
 
     sizes = [n_shoot_done, n_shoot_undone, n_photo_tasks, n_photo_undone]
@@ -411,10 +413,10 @@ def plot_score_pie(results, shoot_targets, photo_targets):
     # Center text
     total_tasks = sum(1 for r in results if r['exec_time'] is not None)
     total_possible = n_shoot_total + n_photo_total
-    ax.text(0, 0, f'{total_tasks}\ntasks\ncompleted',
+    ax.text(0, 0, f'{total_tasks}\n项任务\n已完成',
            ha='center', va='center', fontsize=14, weight='bold')
 
-    ax.set_title('Task Completion Summary', fontsize=14, weight='bold', pad=20)
+    ax.set_title('任务完成情况', fontsize=14, weight='bold', pad=20)
 
     plt.tight_layout()
     plt.savefig(FIG_DIR / "fig_p4_score_pie.png", dpi=DPI)
