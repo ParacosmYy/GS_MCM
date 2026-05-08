@@ -57,6 +57,36 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
 按选定模型执行异步卡尔曼滤波，输出 10\,Hz 轨迹
 \end{algorithm}
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0.4cm,
+        sbox/.style={rectangle, draw=black!80, thick, fill=black!4, minimum width=14em, minimum height=2em, align=center, font=\small, rounded corners=2pt, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
+        dec/.style={diamond, draw=black!80, thick, fill=black!7, aspect=2.5, minimum width=7em, align=center, font=\small, inner sep=1pt},
+        res/.style={rectangle, rounded corners=4pt, draw=black!80, thick, fill=black!12, minimum width=11em, minimum height=1.8em, align=center, font=\small\bfseries},
+        param/.style={font=\scriptsize, text=black!55},
+        arr/.style={-Stealth, thick, black!70}]
+
+        \node[sbox] (s1) {带偏模型估计 $(\Delta\tau, \Delta x, \Delta y)$};
+        \node[sbox, below=of s1] (s2) {零偏模型估计 $(\Delta\tau)$};
+        \node[sbox, below=of s2] (s3) {Bootstrap 协方差 $\hat{\Sigma}$ ($n=1000$)};
+        \node[dec, below=0.8cm of s3] (d1) {$p < 0.05$\,\textbf{且}\,$\Delta$AIC $> 2$?};
+        \node[res, below left=1cm and 0.5cm of d1] (h0) {$H_0$：无偏差\\零偏模型融合};
+        \node[res, below right=1cm and 0.5cm of d1] (h1) {$H_1$：有偏差\\带偏模型融合};
+
+        \draw[arr] (s1) -- (s2);
+        \draw[arr] (s2) -- (s3);
+        \draw[arr] (s3) -- (d1);
+        \draw[arr] (d1) -| node[pos=0.25, above, param]{否} (h0);
+        \draw[arr] (d1) -| node[pos=0.25, above, param]{是} (h1);
+
+        \node[param, right=0.5cm of s3] {$W=2.10$, $p=0.35$};
+        \node[param, right=0.5cm of s1] {SSE$=28603$};
+        \node[param, right=0.5cm of s2] {SSE$=28660$};
+    \end{tikzpicture}
+    \caption{问题三求解流程}
+    \label{fig:flow_p3}
+\end{figure}
+
 \subsection{检验结果}
 
 \begin{table}[htbp]

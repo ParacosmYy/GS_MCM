@@ -42,7 +42,31 @@
     \Return{$\Delta\tau^*$, 轨迹}\;
 \end{algorithm}
 
-\footnote{代码实现借助 AI 工具辅助~\cite{claude2026}，算法设计与参数选择由参赛队完成。}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0.45cm,
+        sbox/.style={rectangle, draw=black!80, thick, fill=black!4, minimum width=14em, minimum height=2em, align=center, font=\small, rounded corners=2pt, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
+        param/.style={font=\scriptsize, text=black!60, align=left},
+        arr/.style={-Stealth, thick, black!70}]
+
+        \node[sbox] (s1) {读入两路观测 $\mathcal{D}_1$ (4\,Hz), $\mathcal{D}_2$ (5\,Hz)};
+        \node[sbox, below=of s1] (s2) {分别构建三次样条 $S_1(t)$, $S_2(t)$};
+        \node[sbox, below=of s2] (s3) {粗搜 $\Delta\tau$：$\pm 50$\,s，步长 0.1\,s};
+        \node[sbox, below=of s3] (s4) {精搜：bounded 优化，精度 $10^{-6}$\,s};
+        \node[sbox, below=of s4] (s5) {10\,Hz 网格取均值 $\to$ 输出轨迹};
+
+        \draw[arr] (s1) -- (s2);
+        \draw[arr] (s2) -- (s3);
+        \draw[arr] (s3) -- (s4);
+        \draw[arr] (s4) -- (s5);
+
+        \node[param, right=0.8cm of s3] {$\Delta\tau_0 = t_1^{\text{start}} - t_2^{\text{start}}$};
+        \node[param, right=0.8cm of s4] {$J^* = 8.39\times10^{-11}$};
+        \node[param, right=0.8cm of s5] {7004 点};
+    \end{tikzpicture}
+    \caption{问题一求解流程}
+    \label{fig:flow_p1}
+\end{figure}
 
 \subsection{结果与分析}
 

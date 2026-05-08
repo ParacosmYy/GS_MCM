@@ -54,58 +54,32 @@
 \section{\texorpdfstring{附录 A\quad 核心代码}{附录 A 核心代码}}
 \markright{附录 A\quad 核心代码}
 
-\subsection*{A.1 问题一：三次样条时间对齐}
-以两路轨迹各建三次样条，一维搜索最小化残差平方和确定时间偏差。
+\subsection*{A.1 问题一}
 \lstinputlisting[language=Python, firstline=42, lastline=54,
   caption={时间对齐代价函数}]{code/models/problem_1_align.py}
 
-\subsection*{A.2 问题二：联合估计与卡尔曼融合}
-联合最小二乘估计三参数，粗搜加 Nelder-Mead 精搜。
-\lstinputlisting[language=Python, firstline=53, lastline=80,
-  caption={联合代价函数与优化}]{code/models/problem_2_fuse.py}
+\subsection*{A.2 问题二}
+\lstinputlisting[language=Python, firstline=60, lastline=75,
+  caption={联合估计与 Nelder-Mead 优化}]{code/models/problem_2_fuse.py}
 
-\subsection*{A.3 问题三：Wald 检验与偏差判定}
-Bootstrap 估计协方差后构造 Wald 统计量。
-\lstinputlisting[language=Python, firstline=52, lastline=80,
-  caption={假设检验核心逻辑}]{code/models/problem_3_realdata.py}
+\subsection*{A.3 问题三}
+\lstinputlisting[language=Python, firstline=117, lastline=140,
+  caption={Bootstrap 协方差与 Wald 检验}]{code/models/problem_3_realdata.py}
 
-\subsection*{A.4 问题四：贪心任务规划}
-搜索满足距离/速度/加速度约束的可行窗口，贪心分配。
+\subsection*{A.4 问题四}
 \lstinputlisting[language=Python, firstline=75, lastline=100,
   caption={可行窗口搜索与贪心调度}]{code/models/problem_4_schedule.py}
 
 \medskip
 \noindent 完整源代码（含验证脚本与可视化）以附件形式随论文提交。
 
-\section{\texorpdfstring{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}{附录 B 卡尔曼滤波过程噪声矩阵推导}}
-\markright{附录 B\quad 卡尔曼滤波过程噪声矩阵推导}
-\noindent 对于常加速度运动模型，状态转移矩阵为：
+\section{\texorpdfstring{附录 B\quad 卡尔曼滤波过程噪声矩阵}{附录 B 卡尔曼滤波过程噪声矩阵}}
+\markright{附录 B\quad 卡尔曼滤波过程噪声矩阵}
+\noindent 常加速度模型状态转移矩阵与离散化过程噪声矩阵（加速度扰动强度 $q$）：
 \begin{equation}
-\mathbf{F} = \begin{bmatrix} 1 & \Delta t & \frac{1}{2}\Delta t^2 \\ 0 & 1 & \Delta t \\ 0 & 0 & 1 \end{bmatrix}
+\mathbf{F} = \begin{bmatrix} 1 & \Delta t & \frac{1}{2}\Delta t^2 \\ 0 & 1 & \Delta t \\ 0 & 0 & 1 \end{bmatrix}, \quad
+\mathbf{Q} = q \begin{bmatrix} \frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & \frac{\Delta t^3}{6} \\ \frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} \\ \frac{\Delta t^3}{6} & \frac{\Delta t^2}{2} & \Delta t \end{bmatrix}
 \end{equation}
-过程噪声由加速度扰动驱动，噪声输入矩阵 $\mathbf{G} = [0, 0, 1]^\top$，假设加速度扰动方差为 $q$，则连续时间过程噪声协方差为 $\mathbf{Q}_c = \mathbf{G} q \mathbf{G}^\top$。离散化后：
-\begin{equation}
-\mathbf{Q} = \int_0^{\Delta t} \mathbf{F}(\tau) \mathbf{G} q \mathbf{G}^\top \mathbf{F}(\tau)^\top \, \mathrm{d}\tau
-= q \begin{bmatrix} \frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & \frac{\Delta t^3}{6} \\ \frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} \\ \frac{\Delta t^3}{6} & \frac{\Delta t^2}{2} & \Delta t \end{bmatrix}
-\end{equation}
-对于二维运动，$x$ 和 $y$ 方向独立，最终过程噪声矩阵为 $6 \times 6$ 分块对角阵：
-\begin{equation}
-\mathbf{Q}_{6 \times 6} = \begin{bmatrix} \mathbf{Q}_x & \mathbf{0}_{3 \times 3} \\ \mathbf{0}_{3 \times 3} & \mathbf{Q}_y \end{bmatrix}
-\end{equation}
-本文采用 $q = 0.1$\,m$^2$/s$^5$，$\Delta t = 0.1$\,s（10\,Hz 采样），以平衡模型灵活性与噪声抑制。
-
-\section{\texorpdfstring{附录 C\quad Wald 检验统计量构造}{附录 C  Wald 检验统计量构造}}
-\markright{附录 C\quad Wald 检验统计量构造}
-\noindent 在问题二中，为检验系统性偏差 $\boldsymbol{\beta} = (\Delta x, \Delta y)$ 是否显著异于零，构造 Wald 检验统计量。
-
-设原假设 $H_0: \boldsymbol{\beta} = \mathbf{0}$，基于最大似然估计得到 $\hat{\boldsymbol{\beta}}$ 及其协方差矩阵 $\hat{\boldsymbol{\Sigma}}_{\beta}$。Wald 统计量定义为：
-\begin{equation}
-W = \hat{\boldsymbol{\beta}}^\top \hat{\boldsymbol{\Sigma}}_{\beta}^{-1} \hat{\boldsymbol{\beta}}
-\end{equation}
-在 $H_0$ 成立条件下，$W$ 渐近服从 $\chi^2(2)$ 分布（自由度为 2，对应两个偏差参数）。协方差矩阵通过 Hessian 矩阵逆估计：
-\begin{equation}
-\hat{\boldsymbol{\Sigma}}_{\beta} = \left[ -\frac{\partial^2 \mathcal{L}}{\partial \boldsymbol{\beta} \partial \boldsymbol{\beta}^\top} \right]^{-1} \bigg|_{\hat{\boldsymbol{\beta}}}
-\end{equation}
-其中 $\mathcal{L}$ 为对数似然函数。本文计算得 $W \approx 42.7$，对应 $p < 0.001$，强烈拒绝 $H_0$，表明偏差参数具有统计显著性。
+二维运动取 $\mathbf{Q}_{6\times6} = \text{blkdiag}(\mathbf{Q}_x, \mathbf{Q}_y)$，参数 $q = 0.1$\,m$^2$/s$^5$，$\Delta t = 0.1$\,s。
 
 \end{document}

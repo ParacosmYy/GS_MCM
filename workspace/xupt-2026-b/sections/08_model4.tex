@@ -68,7 +68,46 @@ $\mathcal{S}^* \leftarrow \arg\max(|\mathcal{S}_{\text{greedy}}|, |\mathcal{S}_{
 \Return $\mathcal{S}^*$
 \end{algorithm}
 
-贪心耗时约 0.5\,s，CP-SAT 约 20\,s，计算代价可接受。
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0.4cm and 1.0cm,
+        sbox/.style={rectangle, draw=black!80, thick, fill=black!4, minimum width=12em, minimum height=1.9em, align=center, font=\small, rounded corners=2pt, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
+        solver/.style={rectangle, draw=black!80, thick, fill=black!8, minimum width=7.5em, minimum height=2.2em, align=center, font=\small, rounded corners=2pt, blur shadow={shadow blur steps=4, shadow xshift=0.2mm, shadow yshift=-0.2mm}},
+        res/.style={rectangle, rounded corners=4pt, draw=black!80, thick, fill=black!12, minimum width=12em, minimum height=1.9em, align=center, font=\small\bfseries},
+        param/.style={font=\scriptsize, text=black!50},
+        arr/.style={-Stealth, thick, black!70}]
+
+        % 上半部：顺序流
+        \node[sbox] (s1) {SG 平滑轨迹（$w=151$，3 阶）};
+        \node[sbox, below=of s1] (s2) {中心差分 $\to$ $v(t)$, $a(t)$};
+        \node[sbox, below=of s2] (s3) {遍历 36 目标 $\times$ 全时刻，约束筛选};
+        \node[sbox, below=of s3] (s4) {候选可行窗口集 $\mathcal{C}$ (591 个)};
+
+        % 三路并行
+        \node[solver, below left=0.8cm and 1.5cm of s4] (g) {贪心\\{\scriptsize 0.5\,s $\to$ 24 任务}};
+        \node[solver, below=0.8cm of s4] (d) {区间 DP\\{\scriptsize 0.5\,s $\to$ 5 任务}};
+        \node[solver, below right=0.8cm and 1.5cm of s4] (c) {CP-SAT\\{\scriptsize 20\,s $\to$ 25 任务}};
+
+        % 汇合
+        \node[res, below=2.8cm of s4] (out) {取最优 $\to$ \textbf{25 任务}（射击 10 + 拍照 15）};
+
+        % 连线
+        \draw[arr] (s1) -- (s2);
+        \draw[arr] (s2) -- (s3);
+        \draw[arr] (s3) -- (s4);
+        \draw[arr] (s4) -| (g);
+        \draw[arr] (s4) -- (d);
+        \draw[arr] (s4) -| (c);
+        \draw[arr] (g) |- (out);
+        \draw[arr] (d) -- (out);
+        \draw[arr] (c) |- (out);
+
+        % 参数标注
+        \node[param, right=0.3cm of s3] {$d$/$v$/$a$/prep 约束};
+    \end{tikzpicture}
+    \caption{问题四求解流程：三策略并行比选}
+    \label{fig:flow_p4}
+\end{figure}
 
 \subsection{结果分析}
 
