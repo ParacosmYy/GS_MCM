@@ -20,7 +20,7 @@ from pathlib import Path
 
 # Configuration
 DPI = 200
-OUTPUT_DIR = Path("D:/Tool/MATH/workspace/xupt-2026-b/figures")
+OUTPUT_DIR = Path(__file__).resolve().parents[2] / "figures"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Set publication style
@@ -226,63 +226,48 @@ def generate_noise_heatmap():
 
 
 def generate_radar_chart():
-    """
-    Figure 3: Radar Chart (Spider Chart)
-    5-dimensional performance comparison across 3 problem methods
-    """
-    # Categories (dimensions)
+    """Radar Chart — enhanced version with larger fonts and value annotations"""
     categories = ['Time\nAccuracy', 'Spatial\nAccuracy', 'Robustness',
                   'Task\nCompletion', 'Computational\nEfficiency']
     N = len(categories)
 
-    # Data for each method (normalized 0-1)
-    # [Time Acc, Spatial Acc, Robustness, Task Complete, Comp Efficiency]
     data = {
-        'Problem 1 Method': [1.0, 1.0, 0.7, 0.5, 0.95],  # N/A → 0.5 for task completion
-        'Problem 2 Method': [0.9, 0.7, 0.85, 0.5, 0.85],  # N/A → 0.5
-        'Problem 4 Method': [0.5, 0.6, 0.7, 0.67, 0.99],  # 24/36 = 0.67
+        'P1: Spline Alignment': [1.0, 1.0, 0.7, 0.5, 0.95],
+        'P2: Joint Est. + KF':  [0.9, 0.7, 0.85, 0.5, 0.85],
+        'P4: CP-SAT Schedule':  [0.5, 0.6, 0.7, 0.69, 0.99],
     }
 
-    # Compute angles for radar chart
     angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
-    angles += angles[:1]  # Complete the circle
+    angles += angles[:1]
 
-    # Colors for each method
-    colors = ['#3498db', '#2ecc71', '#e74c3c']
-    markers = ['o', 's', '^']
+    colors = ['#2C3E50', '#27AE60', '#E74C3C']
+    markers = ['o', 's', 'D']
 
-    fig, ax = plt.subplots(figsize=(9, 8), subplot_kw=dict(projection='polar'), dpi=DPI)
+    fig, ax = plt.subplots(figsize=(10, 9), subplot_kw=dict(projection='polar'), dpi=DPI)
 
-    # Plot data for each method
     for idx, (method, values) in enumerate(data.items()):
-        values += values[:1]  # Complete the circle
-        ax.plot(angles, values, 'o-', linewidth=2, label=method,
-                color=colors[idx], marker=markers[idx], markersize=7)
-        ax.fill(angles, values, alpha=0.15, color=colors[idx])
+        vals = values + values[:1]
+        ax.plot(angles, vals, '-', linewidth=2.5, label=method,
+                color=colors[idx], marker=markers[idx], markersize=8)
+        ax.fill(angles, vals, alpha=0.12, color=colors[idx])
+        for i, (angle, val) in enumerate(zip(angles[:-1], values)):
+            ax.annotate(f'{val:.2f}', xy=(angle, val), fontsize=8,
+                       ha='center', va='bottom', color=colors[idx], weight='bold')
 
-    # Set category labels
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=10)
+    ax.set_xticklabels(categories, fontsize=12, weight='bold')
 
-    # Set radial limits and labels
-    ax.set_ylim(0, 1)
+    ax.set_ylim(0, 1.05)
     ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
     ax.set_yticklabels(['0.2', '0.4', '0.6', '0.8', '1.0'], fontsize=9, color='gray')
 
-    # Grid
-    ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+    ax.grid(True, linestyle='--', linewidth=0.6, alpha=0.5)
 
-    # Legend
-    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1), fontsize=10,
-              frameon=True, shadow=True)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=11,
+              frameon=True, shadow=True, fancybox=True)
 
-    # Title
-    plt.title('Comprehensive Performance Evaluation Across Methods',
-              fontsize=13, fontweight='bold', pad=20, y=1.08)
-
-    # Add note about N/A values
-    fig.text(0.5, 0.02, 'Note: N/A values represented as 0.5 (neutral baseline)',
-             ha='center', fontsize=8, style='italic', color='gray')
+    plt.title('Multi-Dimensional Performance Comparison',
+              fontsize=14, fontweight='bold', pad=25, y=1.08)
 
     plt.tight_layout()
     output_path = OUTPUT_DIR / "fig_results_radar.png"

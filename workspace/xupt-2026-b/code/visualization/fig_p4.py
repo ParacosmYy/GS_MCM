@@ -18,10 +18,10 @@ from pathlib import Path
 import openpyxl
 
 # Configuration
-BASE_DIR = Path("D:/Tool/MATH/workspace/xupt-2026-b")
+BASE_DIR = Path(__file__).resolve().parents[2]
 TRAJ_FILE = BASE_DIR / "output/traj_10hz_3.csv"
 TARGET_FILE = BASE_DIR / "data/附件4.xlsx"
-RESULT_FILE = BASE_DIR / "output/result_v1.xlsx"
+RESULT_FILE = BASE_DIR / "output/result_v2.xlsx"
 FIG_DIR = BASE_DIR / "figures"
 
 # Constraint constants
@@ -149,20 +149,29 @@ def plot_mission_map(t, x, y, shoot_targets, photo_targets, results):
     """Plot trajectory and targets with execution indicators"""
     fig, ax = plt.subplots(figsize=(10, 8), dpi=DPI)
 
-    # Plot smoothed trajectory
-    ax.plot(x, y, '-', color='gray', linewidth=2, alpha=0.4, label='Robot trajectory')
+    # Plot trajectory colored by velocity
+    from matplotlib.collections import LineCollection
+    v_local = np.sqrt(np.gradient(x, 0.1)**2 + np.gradient(y, 0.1)**2)
+    points = np.array([x, y]).T.reshape(-1, 1, 2)
+    segments = np.concatenate([points[:-1], points[1:]], axis=1)
+    lc = LineCollection(segments, cmap='coolwarm', linewidth=2.5, alpha=0.7)
+    lc.set_array(v_local[:-1])
+    lc.set_clim(0, 5)
+    ax.add_collection(lc)
+    cbar = plt.colorbar(lc, ax=ax, shrink=0.6, pad=0.02)
+    cbar.set_label('Speed (m/s)', fontsize=10)
 
     # Plot all targets
     shoot_ids = [t['id'] for t in shoot_targets]
     photo_ids = [t['id'] for t in photo_targets]
 
     for target in shoot_targets:
-        ax.plot(target['x'], target['y'], '^', color='red', markersize=8,
-                markeredgecolor='darkred', markeredgewidth=0.5, alpha=0.7)
+        ax.plot(target['x'], target['y'], '^', color='#C0392B', markersize=11,
+                markeredgecolor='darkred', markeredgewidth=1, alpha=0.8)
 
     for target in photo_targets:
-        ax.plot(target['x'], target['y'], 'o', color='blue', markersize=8,
-                markeredgecolor='darkblue', markeredgewidth=0.5, alpha=0.7)
+        ax.plot(target['x'], target['y'], 'o', color='#2980B9', markersize=11,
+                markeredgecolor='darkblue', markeredgewidth=1, alpha=0.8)
 
     # Mark successful executions
     executed_shoot = set()
@@ -224,11 +233,11 @@ def plot_mission_map(t, x, y, shoot_targets, photo_targets, results):
     ]
     ax.legend(handles=legend_elements, loc='best')
 
-    ax.set_xlabel('X (m)')
-    ax.set_ylabel('Y (m)')
-    ax.set_title('Mission Map: Trajectory and Target Execution')
+    ax.set_xlabel('X (m)', fontsize=11)
+    ax.set_ylabel('Y (m)', fontsize=11)
+    ax.set_title('Mission Map: Trajectory and Target Execution', fontsize=13, weight='bold')
     ax.set_aspect('equal')
-    ax.grid(True, alpha=0.3)
+    ax.grid(True, alpha=0.2, linestyle='--')
 
     plt.tight_layout()
     plt.savefig(FIG_DIR / "fig_p4_mission_map.png", dpi=DPI)
@@ -241,55 +250,47 @@ def plot_mission_map(t, x, y, shoot_targets, photo_targets, results):
 # Figure 2: Gantt Chart
 # ============================================================================
 def plot_gantt_chart(results):
-    """Plot Gantt chart of task execution timeline"""
-    fig, ax = plt.subplots(figsize=(12, 6), dpi=DPI)
+    """Plot Gantt chart of task execution timeline — enhanced version"""
+    valid = [r for r in results if r['prep_start'] is not None and r['exec_time'] is not None]
+    n_tasks = len(valid)
+    fig, ax = plt.subplots(figsize=(14, max(8, n_tasks * 0.35)), dpi=DPI)
 
-    y_pos = 0
-    y_labels = []
-    y_ticks = []
+    colors = {'shoot': '#C0392B', 'photo': '#2980B9'}
 
-    for res in results:
-        if res['prep_start'] is None or res['exec_time'] is None:
-            continue
+    for y_pos, res in enumerate(valid):
+        is_shoot = '射' in str(res['task']) or str(res['target_id']).startswith('S')
+        color = colors['shoot'] if is_shoot else colors['photo']
+        task_type = 'Shoot' if is_shoot else 'Photo'
 
-        task_label = f"{res['task']} (ID: {res['target_id']})"
-        y_labels.append(task_label)
-        y_ticks.append(y_pos)
+        prep_dur = res['exec_time'] - res['prep_start']
+        ax.barh(y_pos, prep_dur, left=res['prep_start'], height=0.75,
+                color=color, alpha=0.85, edgecolor='white', linewidth=0.8)
 
-        # Bar from prep_start to exec_time
-        duration = res['exec_time'] - res['prep_start']
-        color = 'red' if '射击' in res['task'] else 'blue'
+        ax.text(res['prep_start'] + prep_dur / 2, y_pos,
+                f"{res['target_id']}", ha='center', va='center',
+                fontsize=9, color='white', weight='bold')
 
-        ax.barh(y_pos, duration, left=res['prep_start'], height=0.6,
-               color=color, alpha=0.6, edgecolor='black', linewidth=0.5)
-
-        # Add target ID annotation
-        mid_time = res['prep_start'] + duration / 2
-        ax.text(mid_time, y_pos, str(res['target_id']),
-               ha='center', va='center', fontsize=8, color='white', weight='bold')
-
-        y_pos += 1
-
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_labels, fontsize=8)
-    ax.set_xlabel('Time (s)')
-    ax.set_title('Task Execution Timeline (Gantt Chart)')
-    ax.grid(True, axis='x', alpha=0.3)
+    ax.set_yticks(range(n_tasks))
+    ax.set_yticklabels([f"{r['target_id']} ({('S' if '射' in str(r['task']) or str(r['target_id']).startswith('S') else 'P')})"
+                        for r in valid], fontsize=9)
+    ax.set_xlabel('Time (s)', fontsize=11)
+    ax.set_title(f'Task Execution Timeline ({n_tasks} Tasks)', fontsize=13, weight='bold')
+    ax.grid(True, axis='x', alpha=0.25, linestyle='--')
+    ax.grid(True, axis='y', alpha=0.1)
     ax.invert_yaxis()
+    ax.set_xlim(left=min(r['prep_start'] for r in valid) - 5)
 
-    # Legend
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor='red', alpha=0.6, label='Shooting task'),
-        Patch(facecolor='blue', alpha=0.6, label='Photo task')
+        Patch(facecolor=colors['shoot'], alpha=0.85, label=f'Shooting ({sum(1 for r in valid if "射" in str(r["task"]) or str(r["target_id"]).startswith("S"))})'),
+        Patch(facecolor=colors['photo'], alpha=0.85, label=f'Photo ({sum(1 for r in valid if not ("射" in str(r["task"]) or str(r["target_id"]).startswith("S")))})'),
     ]
-    ax.legend(handles=legend_elements, loc='upper right')
+    ax.legend(handles=legend_elements, loc='lower right', fontsize=10, framealpha=0.9)
 
     plt.tight_layout()
-    plt.savefig(FIG_DIR / "fig_p4_gantt.png", dpi=DPI)
+    plt.savefig(FIG_DIR / "fig_p4_gantt.png", dpi=DPI, bbox_inches='tight')
     plt.close()
-
-    print(f"[OK] Saved: fig_p4_gantt.png")
+    print(f"[OK] Saved: fig_p4_gantt.png ({n_tasks} tasks)")
 
 
 # ============================================================================

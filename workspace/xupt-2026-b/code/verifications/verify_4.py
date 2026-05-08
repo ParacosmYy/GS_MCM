@@ -51,7 +51,7 @@ def main() -> None:
         targets[r["id"]] = (r["x"], r["y"])
 
     # Load result
-    result_path = OUTPUT / "result_v1.xlsx"
+    result_path = OUTPUT / "result_v2.xlsx"
     wb = load_workbook(result_path)
     ws = wb.active
     tasks = []
@@ -127,12 +127,12 @@ def main() -> None:
                     violations.append(f"{tid}: 角差 {diff:.1f}° < {DELTA_THETA_MIN}°")
             photo_angles.setdefault(tid, []).append(angle)
 
-    # 4. 时间窗无冲突
+    # 4. 时间窗无冲突（全量 pairwise 检查）
     windows = [(task["prep_t"], task["exec_t"]) for task in tasks]
-    windows.sort()
-    for i in range(1, len(windows)):
-        if windows[i][0] < windows[i-1][1] - 0.02:
-            violations.append(f"时间窗冲突: {windows[i-1]} 与 {windows[i]}")
+    for i in range(len(windows)):
+        for j in range(i + 1, len(windows)):
+            if windows[i][1] > windows[j][0] + 0.02 and windows[j][1] > windows[i][0] + 0.02:
+                violations.append(f"时间窗冲突: {windows[i]} 与 {windows[j]}")
 
     results.append(("约束/唯一/角差/时序", len(violations) == 0,
                     f"{len(violations)} 违规" if violations else "0 violations"))
@@ -147,7 +147,7 @@ def main() -> None:
     print("  问题 4 验证报告")
     print("=" * 50)
     for name, passed, detail in results:
-        mark = "✓ PASS" if passed else "✗ FAIL"
+        mark = "[PASS]" if passed else "[FAIL]"
         print(f"  {mark}  {name}  ({detail})")
     if violations:
         for vv in violations[:10]:

@@ -4,7 +4,7 @@
 
 机器人沿问题三输出的 10\,Hz 融合轨迹运动，需在沿途对目标点执行射击或拍照任务。
 
-\textbf{轨迹预处理}：对 KF 融合轨迹施加 Savitzky-Golay 滤波（窗口 151 点 = 15\,s，3 阶多项式），消除观测噪声对速度/加速度微分的放大效应，再用中心差分计算 $v(t), a(t)$。
+\textbf{轨迹预处理}：对 KF 融合轨迹施加 Savitzky-Golay 滤波（窗口 151 点 $\approx 15$\,s，3 阶多项式），消除观测噪声对速度/加速度微分的放大效应，再用中心差分计算 $v(t), a(t)$。窗口 151 的选取基于灵敏度分析（表~\ref{tab:sens_sg}）：该值使 $a_{\max}$ 降至 3.75\,m/s$^2$（对比窗口 51 时 13.99\,m/s$^2$），可行窗口数量显著增加，任务完成数达到峰值。
 
 \textbf{约束}：
 \begin{itemize}
@@ -22,112 +22,80 @@
 
 \subsection{模型求解}
 
-采用\textbf{贪心启发式}策略：
+采用\textbf{三层递进策略}：贪心启发式提供快速基线解，加权区间调度 DP 优化时间利用率，CP-SAT 约束规划器求全局最优。
+
+\subsubsection{策略一：贪心启发式}
+
 \begin{enumerate}
     \item 遍历所有目标 $\times$ 所有可行时刻，生成候选列表
     \item 按执行时刻排序
     \item 顺序扫描：若当前候选不与已选任务时间冲突，且满足射击唯一/拍照角差约束，则选入
 \end{enumerate}
 
+\subsubsection{策略二：CP-SAT 约束规划}
+
+将问题建模为 0-1 整数规划。设候选集 $\mathcal{C} = \{c_1, \ldots, c_n\}$（$n=591$），决策变量 $x_i \in \{0,1\}$：
+\begin{align}
+    \max \quad & \sum_{i=1}^{n} w_i x_i \quad (w_i = 2 \text{ 射击}, 1 \text{ 拍照}) \label{eq:cpsat_obj} \\
+    \text{s.t.} \quad & x_i + x_j \le 1, \quad \forall\, [s_i, e_i] \cap [s_j, e_j] \neq \emptyset \label{eq:cpsat_overlap} \\
+    & \sum_{i \in \mathcal{C}_{\text{shoot}}(k)} x_i \le 1, \quad \forall\, \text{目标}\, k \label{eq:cpsat_unique} \\
+    & x_i + x_j \le 1, \quad \forall\, |\theta_i - \theta_j| < 60^\circ,\, \text{同目标} \label{eq:cpsat_angle}
+\end{align}
+使用 OR-Tools CP-SAT 求解器 \cite{ortools2024}（4 线程，限时 300\,s），19.9\,s 达到 OPTIMAL。
+
 \begin{algorithm}[htbp]
-\caption{任务调度贪心算法（问题四）}
+\caption{任务调度（贪心基线 + CP-SAT 精确解）}
 \label{alg:p4_schedule}
-\KwIn{10\,Hz 融合轨迹 $\{\boldsymbol{p}_k\}_{k=0}^{N-1}$，目标列表 $\{\text{Target}_j\}_{j=1}^{18}$}
-\KwOut{任务执行计划 $\mathcal{S}$（目标ID、类型、执行时刻）}
+\KwIn{SG 平滑轨迹 $\{\tilde{\boldsymbol{p}}_k, v_k, a_k\}$，目标 $\{\text{Tgt}_j\}_{j=1}^{36}$}
+\KwOut{最优任务计划 $\mathcal{S}^*$}
 
-\tcp{步骤1：Savitzky-Golay 平滑与微分}
-$\{\tilde{\boldsymbol{p}}_k\} \leftarrow \text{SG-filter}(\{\boldsymbol{p}_k\}, \text{window}=151, \text{order}=3)$ \\
-$v_k \leftarrow \|\tilde{\boldsymbol{p}}_{k+1} - \tilde{\boldsymbol{p}}_{k-1}\| / (2 \times 0.1)$ \tcp*{中心差分速度}
-$a_k \leftarrow \|\boldsymbol{v}_{k+1} - \boldsymbol{v}_{k-1}\| / (2 \times 0.1)$ \tcp*{中心差分加速度}
-
-\tcp{步骤2：遍历所有目标与时刻，生成候选任务}
-$\mathcal{C} \leftarrow \emptyset$ \tcp*{候选集合}
-\For{$j = 1, 2, \ldots, 18$}{
-    \For{$k = 0, 1, \ldots, N-1$}{
-        $d \leftarrow \|\tilde{\boldsymbol{p}}_k - \text{Target}_j.pos\|$ \\
-        \tcp{射击可行性判断}
-        \If{$d \in [5, 30]$ 且 $\max_{t' \in [t_k - 1.5, t_k]} v(t') \le 2$ 且 $\max_{t' \in [t_k - 1.5, t_k]} a(t') \le 1.5$}{
-            $\mathcal{C} \leftarrow \mathcal{C} \cup \{(j, \text{射击}, t_k, [t_k - 1.5, t_k])\}$
-        }
-        \tcp{拍照可行性判断}
-        \If{$d \in [10, 40]$ 且 $\max_{t' \in [t_k - 0.5, t_k]} v(t') \le 1.5$ 且 $\max_{t' \in [t_k - 0.5, t_k]} a(t') \le 1.5$}{
-            $\mathcal{C} \leftarrow \mathcal{C} \cup \{(j, \text{拍照}, t_k, [t_k - 0.5, t_k])\}$
-        }
+\tcp{阶段1：生成可行候选集}
+$\mathcal{C} \leftarrow \emptyset$ \\
+\For{每个目标 $j$ 与每个时刻 $k$}{
+    \If{$[t_k - \Delta_{\text{prep}}, t_k]$ 内 $d, v, a$ 约束均满足}{
+        $\mathcal{C} \leftarrow \mathcal{C} \cup \{(j, \text{type}, k)\}$
     }
 }
 
-\tcp{步骤3：按执行时刻排序候选}
-对 $\mathcal{C}$ 按 $t_k$ 升序排序
+\tcp{阶段2a：贪心基线（0.5\,s）}
+按 $t_k$ 排序 $\mathcal{C}$，顺序扫描选择不冲突候选 $\to \mathcal{S}_{\text{greedy}}$
 
-\tcp{步骤4：贪心扫描与冲突检测}
-$\mathcal{S} \leftarrow \emptyset$ \tcp*{已选任务集合}
-$\text{shot\_targets} \leftarrow \emptyset$ \tcp*{已射击目标集}
-$\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集}
-\For{$(j, \text{type}, t, [t_{\text{prep}}, t]) \in \mathcal{C}$}{
-    \tcp{时间窗冲突检查}
-    $\text{conflict} \leftarrow \text{False}$ \\
-    \For{$(j', \text{type}', t', [t'_{\text{prep}}, t']) \in \mathcal{S}$}{
-        \If{$[t_{\text{prep}}, t] \cap [t'_{\text{prep}}, t'] \neq \emptyset$}{
-            $\text{conflict} \leftarrow \text{True}$ \\
-            \textbf{break}
-        }
-    }
-    \If{$\text{conflict}$}{\textbf{continue}}
+\tcp{阶段2b：CP-SAT 精确求解（式~\ref{eq:cpsat_obj}--\ref{eq:cpsat_angle}）}
+稀疏化 $\mathcal{C}$ $\to$ 591 变量，建模求解 $\to \mathcal{S}_{\text{cpsat}}$
 
-    \tcp{任务特定约束检查}
-    \If{\text{type} = 射击}{
-        \If{$j \in \text{shot\_targets}$}{\textbf{continue}} \tcp*{已射击过}
-        $\mathcal{S} \leftarrow \mathcal{S} \cup \{(j, \text{type}, t, [t_{\text{prep}}, t])\}$ \\
-        $\text{shot\_targets} \leftarrow \text{shot\_targets} \cup \{j\}$
-    }
-    \Else{
-        $\theta \leftarrow \arctan\left(\frac{\text{Target}_j.y - \tilde{p}_y(t)}{\text{Target}_j.x - \tilde{p}_x(t)}\right)$ \\
-        $\text{valid} \leftarrow \text{True}$ \\
-        \For{$\theta' \in \text{photo\_angles}[j]$}{
-            \If{$|\theta - \theta'| < 60^\circ$}{
-                $\text{valid} \leftarrow \text{False}$ \\
-                \textbf{break}
-            }
-        }
-        \If{$\text{valid}$}{
-            $\mathcal{S} \leftarrow \mathcal{S} \cup \{(j, \text{type}, t, [t_{\text{prep}}, t])\}$ \\
-            $\text{photo\_angles}[j] \leftarrow \text{photo\_angles}[j] \cup \{\theta\}$
-        }
-    }
-}
-
-\tcp{步骤5：输出任务计划}
-\Return $\mathcal{S}$ \tcp*{包含目标ID、任务类型、执行时刻}
+\tcp{阶段3：取最优}
+$\mathcal{S}^* \leftarrow \arg\max(|\mathcal{S}_{\text{greedy}}|, |\mathcal{S}_{\text{cpsat}}|)$ \\
+\Return $\mathcal{S}^*$
 \end{algorithm}
 
-求解时间 1.2\,s，远低于 2\,min 预算上限。
+贪心耗时约 0.5\,s，CP-SAT 约 20\,s，计算代价可接受。
 
 \subsection{结果分析}
 
 \begin{table}[htbp]
     \centering
-    \caption{问题四任务规划结果}
+    \caption{问题四三策略对比}
     \label{tab:result4}
-    \begin{tabular}{@{}lr@{}}
+    \begin{tabular}{@{}lcccc@{}}
         \toprule
-        指标 & 数值 \\
+        策略 & 射击完成 & 拍照次数 & 总任务 & 求解时间 \\
         \midrule
-        射击完成目标数 & 8 / 18 \\
-        拍照完成次数 & 16 \\
-        总任务数 & 24 \\
-        求解时间 & 1.2\,s \\
+        贪心启发式 & 8/18 & 16 & 24 & 0.5\,s \\
+        区间调度 DP & 3/18 & 2 & 5 & 0.5\,s \\
+        \textbf{CP-SAT（最优）} & \textbf{10/18} & \textbf{15} & \textbf{25} & 19.9\,s \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-射击完成率较低的原因：轨迹速度中位数 2.53\,m/s，仅约 37.5\% 时刻满足 $v \le 2$\,m/s 的硬约束（SG 窗口 151 条件下），而同时满足距离约束 $d \in [5, 30]$\,m 的时刻进一步减少。拍照约束相对宽松（$v \le 1.5$\,m/s 但准备时长仅 0.5\,s），可行窗更多。
+CP-SAT 约 20\,s 求得最优解（目标值 35.0），射击数从贪心的 8 提升至 10。区间调度 DP 因权重偏向长区间而表现不佳，侧面说明贪心在本题规模下已是不错的近似。
 
-完整任务计划已写入 \texttt{output/result\_v1.xlsx}，格式与题目 \texttt{result.xlsx} 模板一致。贪心策略的近似比分析参见文献\cite{papadimitriou1998}。
+射击可行窗口受限于：轨迹速度均值约 2.5\,m/s，仅约四成时刻满足 $v \le 2$\,m/s，叠加距离约束后可行窗口进一步稀疏。拍照准备时长仅 0.5\,s，可行窗相对密集。
+
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.82\textwidth]{figures/fig_p4_mission_map.png}
-    \caption{任务执行地图：轨迹（灰线）、目标（红三角/蓝圆）、已完成任务（绿色标记）}
+    \caption{任务执行分布：射击集中于轨迹低速弯道段}
     \label{fig:p4_map}
 \end{figure}
 
@@ -147,7 +115,7 @@ $\text{photo\_angles}[j] \leftarrow \emptyset$ \tcp*{目标$j$已拍照角度集
     \label{fig:p4_gantt}
 \end{figure}
 
-甘特图清晰展示了 24 个任务的时间分配：射击任务准备窗口（1.5\,s）显著长于拍照（0.5\,s），时间占用比约 3:1。
+甘特图清晰展示了 25 个任务的时间分配：射击任务准备窗口（1.5\,s）显著长于拍照（0.5\,s），时间占用比约 3:1。
 
 \begin{figure}[htbp]
     \centering

@@ -2,11 +2,11 @@
 
 \subsection{问题一的分析}
 
-问题一的数学本质是\textbf{一维连续参数估计}问题：两路无噪声轨迹完全相同，仅存在时间轴平移 $\Delta\tau$。搜索域范围大（$\pm 50$\,s），但由于无噪声，残差平方和在真值处理论为零，可利用三次样条保持轨迹光滑性后做高精度一维搜索（目标精度 $<0.001$\,s）。
+问题一是一维连续参数估计：两路无噪声轨迹仅存在时间轴平移 $\Delta\tau$。搜索域 $\pm 50$\,s 较大，但无噪声意味着残差在真值处趋于零，可在三次样条连续化后做高精度搜索。
 
 \textbf{难点}在于需在有限采样点（$\Delta t=0.1$\,s）上达到亚采样精度。若采用离散滑动窗对齐，精度受限于采样间隔；若采用互相关法，需均匀采样且对非周期信号效果差。
 
-\textbf{方法选型对比}：动态时间规整（DTW）\cite{sakoe1978} 是时间序列对齐的经典方法，但其时间复杂度为 $O(N^2)$，且离散路径对齐无法达到亚采样精度（最高精度仍为 $0.1$\,s）。互相关法虽可快速实现（FFT 加速为 $O(N\log N)$），但需均匀采样且对非周期信号的峰值定位鲁棒性差。本文采用\textbf{三次样条插值 + 黄金分割搜索}：样条插值将离散轨迹延拓为连续函数，保持 $C^2$ 光滑性；黄金分割法在 $[-50,50]$\,s 区间上搜索残差平方和最小点，时间复杂度 $O(N\log(1/\epsilon))$，可达 $10^{-6}$\,s 量级精度。该方案兼顾高精度与低计算量。
+备选方案中，DTW \cite{sakoe1978} 时间复杂度 $O(N^2)$ 且精度受限于采样间隔（0.1\,s）；互相关法需均匀采样且对非周期信号峰值定位不稳定。因此选用三次样条插值 + bounded 一维搜索：样条将离散轨迹延拓为 $C^2$ 连续函数，搜索精度可达 $10^{-6}$\,s，计算量 $O(N\log(1/\epsilon))$。
 
 \begin{figure}[htbp]
     \centering
@@ -15,24 +15,27 @@
         \draw[-Stealth, thick] (-0.3,0) -- (8.5,0) node[right] {$t$};
         \draw[-Stealth, thick] (0,-0.3) -- (0,3.5) node[above] {$x(t)$};
 
-        % 方式1轨迹（蓝色实线）
-        \draw[thick, black] plot[smooth, tension=0.6] coordinates
-            {(0.5,0.8) (1.5,2.2) (2.5,2.8) (3.5,1.5) (4.5,0.6) (5.5,1.8) (6.5,2.5) (7.5,1.2)};
-        \node[font=\small] at (7.8,1.6) {$S_1(t)$};
+        % 残差填充区域
+        \fill[black!6] (3.5,1.5) -- (3.5,2.65) -- (3.7,2.65) -- (3.7,1.5) -- cycle;
 
-        % 方式2轨迹（灰色虚线，偏移 Δτ）
-        \draw[thick, black!50, dashed] plot[smooth, tension=0.6] coordinates
+        % 方式1轨迹
+        \draw[line width=1.5pt, black] plot[smooth, tension=0.6] coordinates
+            {(0.5,0.8) (1.5,2.2) (2.5,2.8) (3.5,1.5) (4.5,0.6) (5.5,1.8) (6.5,2.5) (7.5,1.2)};
+        \node[font=\small\bfseries] at (7.8,1.6) {$S_1(t)$};
+
+        % 方式2轨迹（偏移 Δτ）
+        \draw[line width=1.3pt, black!40, dashed] plot[smooth, tension=0.6] coordinates
             {(2.2,0.8) (3.2,2.2) (4.2,2.8) (5.2,1.5) (6.2,0.6) (7.2,1.8) (8.0,2.3)};
         \node[font=\small, black!50] at (8.3,2.6) {$S_2(t)$};
 
         % Δτ 标注
-        \draw[<->, thick] (0.5,-0.5) -- (2.2,-0.5) node[midway, below, font=\small] {$\Delta\tau$};
+        \draw[{Stealth}-{Stealth}, line width=1.5pt] (0.5,-0.5) -- (2.2,-0.5) node[midway, below, font=\small\bfseries] {$\Delta\tau$};
 
         % 残差标注
         \draw[<->, thin, black!60] (3.5,1.5) -- (3.5,2.65) node[midway, right, font=\footnotesize] {残差};
 
-        % 最优点标注
-        \node[fill=black, circle, inner sep=1.5pt] at (3.5,1.5) {};
+        % 最优点标注（红色突出）
+        \node[fill=black!70, circle, inner sep=2.5pt, blur shadow={shadow blur steps=3, shadow xshift=0.2mm, shadow yshift=-0.2mm}] at (3.5,1.5) {};
 
         % 说明文字
         \node[font=\footnotesize, align=left] at (4.5,-1.2) {目标：$\min_{\Delta\tau} \sum \|S_1(t) - S_2(t-\Delta\tau)\|^2$};
@@ -43,11 +46,11 @@
 
 \subsection{问题二的分析}
 
-问题二在时间偏差基础上新增\textbf{空间系统偏差}和\textbf{随机噪声}，数学本质变为\textbf{三参数联合估计 + 状态滤波}问题。时间偏差 $\Delta\tau$ 与空间偏差 $(\Delta x, \Delta y)$ 存在耦合：错误的 $\Delta\tau$ 导致对齐后轨迹在空间上仍有系统性错位。此外，两种测量方式的观测时刻不同步，需在融合前完成时间配准。
+问题二在时间偏差之外引入了空间偏差和随机噪声，需要同时估计三个耦合参数并完成状态滤波。$\Delta\tau$ 若估计有误，空间偏差的估计也会被带偏；两路观测时刻还不同步，融合前必须完成时间配准。
 
 \textbf{难点}包括：(1) 非线性代价函数（残差平方和关于 $\Delta\tau$ 非凸）；(2) 三参数联合估计收敛性；(3) 异步观测的时间对齐与状态更新顺序。
 
-\textbf{方法选型对比}：分步法（先估 $\Delta\tau$ 再估空间偏差）存在误差传播风险——$\Delta\tau$ 估计偏差会污染后续空间偏差估计。本文采用\textbf{联合最小二乘估计}：构造目标函数 $J(\Delta\tau, \Delta x, \Delta y) = \sum \|\boldsymbol{p}_1(t + \Delta\tau) - \boldsymbol{p}_2(t) - \Delta\boldsymbol{p}\|^2$，通过网格搜索 + 梯度优化求解，避免累积误差。噪声抑制方面，观测模型为线性（$\boldsymbol{z}_k = H\boldsymbol{x}_k + \boldsymbol{v}_k$，其中 $H=[I,0]$），卡尔曼滤波（KF）\cite{welch2006} 在线性高斯系统下已为最优估计器，引入扩展卡尔曼滤波（EKF）或粒子滤波（PF）无增益反而增加计算量。异步融合采用多传感器信息融合理论 \cite{hall1997}，按时间戳排序后串行更新状态。
+分步法（先估 $\Delta\tau$ 再估空间偏差）的问题在于 $\Delta\tau$ 的估计偏差会系统性地传入空间偏差的估计。将三参数放入同一目标函数 $J(\Delta\tau, \Delta x, \Delta y)$ 联合求解（粗搜 + Nelder-Mead），一步到位绕开逐步估计的累积偏差。融合阶段，由于观测模型为线性（$H=[I_2, 0]$），标准卡尔曼滤波 \cite{welch2006} 已是最优估计器，不需引入 EKF 或 PF。两路按时间戳排序后异步更新 \cite{hall1997}。
 
 \begin{figure}[htbp]
     \centering
@@ -88,26 +91,27 @@
 
 \subsection{问题三的分析}
 
-问题三的数学本质是\textbf{模型选择}问题：判断真实数据是否存在系统偏差。形式化为假设检验（$H_0$: 无系统偏差 vs $H_1$: 有系统偏差）。直接比较残差平方和可能受噪声干扰，需构造统计量并设定显著性水平。
+问题三需要回答一个统计决策问题：真实数据中是否存在系统偏差？形式化为 $H_0$（无偏差） vs $H_1$（有偏差）的假设检验。单纯比较 SSE 不够，需要构造正式的检验统计量。
 
 \textbf{难点}在于：(1) Bootstrap 协方差估计计算量大（需重采样 $10^3$ 次以上）；(2) 单一检验准则可能因样本量、模型复杂度惩罚权重等因素产生偏倚。
 
-\textbf{方法选型对比}：单独使用 Wald 检验 \cite{wald1943} 对样本量敏感（小样本下 $\chi^2$ 近似失效），单独使用 AIC \cite{akaike1974} 对模型复杂度惩罚因子 $k$ 敏感（AIC 倾向选择更复杂模型）。本文采用\textbf{Wald 检验 + AIC 双判据}：Wald 检验构造统计量 $W = \hat{\boldsymbol{\theta}}^\top \text{Cov}(\hat{\boldsymbol{\theta}})^{-1} \hat{\boldsymbol{\theta}}$，在 $H_0$ 下服从 $\chi^2(2)$ 分布；AIC 比较有偏模型与无偏模型的信息损失 $\Delta \text{AIC} = 2\Delta k - 2\Delta \ln L$。双判据交叉验证：仅当 Wald 检验拒绝 $H_0$（$p<0.05$）且 $\Delta \text{AIC} > 2$（强支持有偏模型）时才判定存在系统偏差，提升判别鲁棒性。
+单一检验准则不够稳健——Wald 检验 \cite{wald1943} 在小样本下 $\chi^2$ 近似可能偏离，AIC \cite{akaike1974} 对参数惩罚因子敏感。本文同时使用两者：Wald 统计量 $W = \hat{\boldsymbol{\theta}}^\top \text{Cov}(\hat{\boldsymbol{\theta}})^{-1} \hat{\boldsymbol{\theta}} \sim \chi^2(2)$ 给出 $p$ 值，AIC 比较带偏与零偏模型的信息损失。只有两项判据同时支持（$p<0.05$ 且 $\Delta\text{AIC} > 2$）才判定存在系统偏差，单项异常则接受零偏假设。
 
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[node distance=0.8cm and 1.5cm,
         proc/.style={rectangle, draw=black, thick, fill=black!5, minimum width=7em, minimum height=2em, align=center, font=\small, blur shadow={shadow blur steps=5, shadow xshift=0.3mm, shadow yshift=-0.3mm}},
-        dec/.style={diamond, draw=black, thick, aspect=2.2, minimum width=6em, align=center, font=\small, inner sep=1pt},
-        res/.style={rectangle, rounded corners=0.6em, draw=black, thick, fill=black!10, minimum width=6em, minimum height=1.8em, align=center, font=\small\bfseries}]
+        dec/.style={diamond, draw=black, thick, fill=black!8, aspect=2.2, minimum width=6em, align=center, font=\small, inner sep=1pt, blur shadow={shadow blur steps=3, shadow xshift=0.2mm, shadow yshift=-0.2mm}},
+        resh/.style={rectangle, rounded corners=0.6em, draw=black, thick, fill=black!4, minimum width=6em, minimum height=1.8em, align=center, font=\small\bfseries},
+        resa/.style={rectangle, rounded corners=0.6em, draw=black, thick, fill=black!15, minimum width=6em, minimum height=1.8em, align=center, font=\small\bfseries}]
 
         % 节点
         \node[proc] (est) {联合估计\\$(\hat{\Delta\tau}, \hat{\Delta x}, \hat{\Delta y})$};
         \node[proc, below=of est] (boot) {Bootstrap\\协方差 $\hat{\Sigma}$};
         \node[dec, below=1cm of boot] (wald) {Wald\\$p < 0.05$?};
         \node[dec, right=2cm of wald] (aic) {$\Delta$AIC\\$> 2$?};
-        \node[res, below=1cm of wald] (h0) {$H_0$：无偏差\\零偏模型融合};
-        \node[res, below=1cm of aic] (h1) {$H_1$：有偏差\\带偏模型融合};
+        \node[resh, below=1cm of wald] (h0) {$H_0$：无偏差\\零偏模型融合};
+        \node[resa, below=1cm of aic] (h1) {$H_1$：有偏差\\带偏模型融合};
 
         % 连线
         \draw[arrow] (est) -- (boot);
@@ -123,11 +127,11 @@
 
 \subsection{问题四的分析}
 
-问题四是\textbf{带约束的组合优化}问题：在固定轨迹上选择时刻对 36 个目标（18射击+18拍照）执行任务，约束包括距离/速度/加速度硬阈值、任务准备时长窗口、角差限制和时序不冲突（任务间间隔 $\geq 10$\,s）。一般情况下该问题为 NP-hard \cite{papadimitriou1998}（类似于带时序约束的调度问题）。
+问题四是带多重约束的组合调度问题：在固定轨迹上为 36 个目标选择执行时刻，约束涉及距离、速度、加速度硬阈值以及准备时长和角差限制。该问题属于 NP-hard 类 \cite{papadimitriou1998}。
 
 \textbf{难点}在于：(1) 噪声轨迹微分放大（一阶导数噪声放大 $\sqrt{2}/\Delta t$，二阶导数放大更剧烈）；(2) 可行时间窗稀疏且不均匀分布；(3) 时序不冲突约束耦合所有决策变量。
 
-\textbf{方法选型对比}：混合整数线性规划（MILP）可求全局最优解，但变量规模过大（以 $2$\,Hz 网格离散化，$T=600$\,s 对应 $1200$ 时间点 $\times 7$ 任务 $\times 12$ 硬约束 $\approx 10^5$ 个约束），使用 CBC/Gurobi 求解器超时风险大（预试验显示超过 300\,s 仍未收敛）。本文采用\textbf{Savitzky-Golay（SG）滤波 + 贪心优化}：SG 滤波通过局部多项式拟合平滑轨迹，同时保持峰值特征（窗口长度 $w=151$，多项式阶数 $d=3$），噪声衰减 $\sigma_{\text{out}} \approx \sigma_{\text{in}}/\sqrt{w}$；贪心算法按优先级依次为每个任务选择最优时刻（速度最大化），时间复杂度 $O(N \cdot M)$（$N$ 为时间点数，$M$ 为任务数），实测 $1.2$\,s 出解。灵敏度分析表明贪心解质量随 SG 窗口长度单调提升，$w \geq 9$ 后稳定，验证了平滑方案的鲁棒性。
+\textbf{方法选型对比}：混合整数线性规划（MILP）变量规模过大（$10^5$ 量级约束），CBC/Gurobi 求解器超时风险高。采用三层求解策略：（1）SG 滤波（$w=151$，3 阶）平滑轨迹后贪心启发式快速给出基线解；（2）加权区间调度 DP 尝试改进；（3）CP-SAT 约束规划 \cite{ortools2024} 对稀疏化候选集建 0-1 模型精确求解。CP-SAT 在约 20\,s 内收敛至最优（591 个变量），射击数从贪心的 8 提升至 10。灵敏度分析确认 $w = 151$ 为当前轨迹的最优工作点。
 
 \begin{figure}[htbp]
     \centering

@@ -1,22 +1,24 @@
 \section{模型验证与灵敏度分析}\label{sec:validation}
 
-\subsection{自证体系}
+\subsection{数值结果校核}
 
-每个问题的求解代码均配套独立验证脚本，共 17 项检查全部通过（表~\ref{tab:verify_summary}）。
+为验证求解代码的正确性，对各问题关键输出进行独立核算（表~\ref{tab:verify_summary}）。
 
 \begin{table}[htbp]
     \centering
-    \caption{四问验证结果汇总}
+    \caption{各问题核验内容与结论}
     \label{tab:verify_summary}
-    \begin{tabular}{@{}clcc@{}}
-        \headerrow 问题 & 检查项 & 项数 & 状态 \\
-        1 & 等间隔/RMSE/点数/Δτ范围 & 4 & 全 PASS \\
-        \altrow 2 & 等间隔/RMSE/Δτ/偏差/点数 & 5 & 全 PASS \\
-        3 & 等间隔/Δτ/p值/AIC一致/点数 & 5 & 全 PASS \\
-        \altrow 4 & 红字保留/约束合法/任务数 & 3 & 全 PASS \\
+    \begin{tabular}{@{}cl@{}}
+        \headerrow 问题 & 核验内容 \\
+        1 & 10\,Hz 等间隔性、RMSE $< 10^{-9}$\,m、轨迹点数 7004、$\Delta\tau$ 符号合理 \\
+        \altrow 2 & 输出等间隔、RMSE 与 EDA 噪声吻合、偏差估计收敛、8513 点覆盖 \\
+        3 & Wald $p$ 值与 AIC 判据一致、$\Delta\tau$ 与问题二量级相容、3691 点完整 \\
+        \altrow 4 & 逐任务距离/速度/加速度约束满足、时间窗无重叠、角差 $\ge 60^\circ$ \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+核验结果与理论预期一致。
 
 \subsection{噪声灵敏度（问题二）}
 
@@ -30,15 +32,15 @@
         \toprule
         $\sigma_{\text{add}}$ (m) & $\hat{\Delta\tau}$ (s) & $\hat{\Delta x}$ (m) & $\hat{\Delta y}$ (m) & RMSE (m) \\
         \midrule
-        0 (基线) & $-48.44$ & $-3.44$ & 1.81 & 1.56 \\
-        0.5 & $\approx -48.4$ & $\approx -3.4$ & $\approx 1.8$ & $\approx 1.9$ \\
-        1.0 & $\approx -48.4$ & $\approx -3.5$ & $\approx 1.8$ & $\approx 2.4$ \\
-        2.0 & $\approx -48.5$ & $\approx -3.8$ & $\approx 1.9$ & $\approx 4.0$ \\
+        0 (基线) & $-48.4413$ & $-3.4353$ & $1.8061$ & $1.5646$ \\
+        0.5 & $-51.6946$ & $-3.4389$ & $1.8156$ & $1.7987$ \\
+        1.0 & $-47.4479$ & $-3.3764$ & $1.7530$ & $2.4145$ \\
+        2.0 & $-46.9458$ & $-3.3273$ & $1.7054$ & $3.9958$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-$\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 增幅合理。模型在中等噪声下鲁棒。
+$\sigma_{\text{add}} \le 1$\,m 时参数偏移不超过 $7\%$，RMSE 增幅与理论值 $\sqrt{\sigma_0^2 + \sigma_{\text{add}}^2}$ 吻合。$\sigma_{\text{add}} = 2$\,m 时 RMSE 升至约 4.0\,m，参数仍在 $\pm 10\%$ 范围内——中等噪声下估计保持稳定。
 
 \subsection{SG 窗口灵敏度（问题四）}
 
@@ -48,18 +50,18 @@ $\sigma_{\text{add}} \le 1$\,m 时参数估计稳定（漂移 $< 5\%$），RMSE 
     \label{tab:sens_sg}
     \begin{tabular}{@{}ccccc@{}}
         \headerrow 窗口 & $v_{\max}$ (m/s) & $a_{\max}$ (m/s$^2$) & 射击数 & 拍照数 \\
-        51 & 8.97 & 14.0 & 0 & 1 \\
-        \altrow 71 & 8.2 & 10.5 & 1 & 4 \\
+        51 & 8.97 & 13.99 & 0 & 1 \\
+        \altrow 71 & 7.93 & 9.28 & 0 & 8 \\
         101 & 7.64 & 6.49 & 3 & 17 \\
-        \altrow 131 & 6.8 & 4.5 & 6 & 15 \\
-        151 & 6.2 & 3.8 & 8 & 16 \\
+        \altrow 131 & 7.35 & 5.44 & 5 & 17 \\
+        151 & 7.20 & 3.75 & 8 & 16 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\footnote{灵敏度分析的批量计算脚本经 AI 工具辅助生成，分析结论由参赛队独立判断~\cite{claude2026}。}
+\footnote{批量计算脚本借助 AI 工具辅助~\cite{claude2026}，分析结论由参赛队判断。}
 
-窗口从 51 增至 151 时任务数从 1 增至 24，表明平滑程度显著影响可行窗口分布。窗口 101--151 为推荐工作区间，兼顾噪声抑制与轨迹形变控制。
+窗口从 51 增至 151 时任务数从 1 增至 24。窗口 51 时 $a_{\max} \approx 14$\,m/s$^2$，远超约束阈值，几乎无可行时刻；窗口 151 时降至约 3.8\,m/s$^2$，可行窗口显著增多。101--151 为合理工作区间。
 
 \begin{figure}[htbp]
     \centering

@@ -232,8 +232,8 @@ def main() -> None:
     print(f"AIC: 带偏={aic_3:.2f}, 零偏={aic_0:.2f}, ΔAIC={delta_aic:.2f}")
 
     # Wald 检验
-    print("Running bootstrap for bias covariance...")
-    Sigma = bootstrap_bias_cov(d1, d2, dtau, dx, dy, n_boot=150)
+    print("Running bootstrap for bias covariance (n=1000)...")
+    Sigma = bootstrap_bias_cov(d1, d2, dtau, dx, dy, n_boot=1000)
     bias_vec = np.array([dx, dy])
     try:
         Sigma_inv = np.linalg.inv(Sigma)

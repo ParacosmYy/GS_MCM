@@ -8,7 +8,7 @@
     \label{eq:time_offset}
 \end{equation}
 
-对两路分别建三次样条插值 $S_1(t)$、$S_2(t)$，则在对齐后公共时段 $\mathcal{T} = [t_{\max}, t_{\min}]$ 上，最小化残差平方和：
+对两路分别建三次样条插值 $S_1(t)$、$S_2(t)$，则在对齐后公共时段 $\mathcal{T} = [\max(t_1^{\text{start}}, t_2^{\text{start}} + \Delta\tau),\; \min(t_1^{\text{end}}, t_2^{\text{end}} + \Delta\tau)]$ 上，最小化残差平方和：
 \begin{equation}
     \Delta\tau^* = \arg\min_{\Delta\tau} \sum_{t_k \in \mathcal{T}} \left\| S_1(t_k) - S_2(t_k - \Delta\tau) \right\|^2
     \label{eq:p1_obj}
@@ -42,7 +42,7 @@
     \Return{$\Delta\tau^*$, 轨迹}\;
 \end{algorithm}
 
-\footnote{本节求解代码经 AI 工具辅助编写，核心算法设计与参数选择由参赛队独立完成~\cite{claude2026}。}
+\footnote{代码实现借助 AI 工具辅助~\cite{claude2026}，算法设计与参数选择由参赛队完成。}
 
 \subsection{结果与分析}
 
@@ -62,7 +62,7 @@
     \end{tabular}
 \end{table}
 
-RMSE 达到 $10^{-11}$ 量级，验证了附件1确实无噪声，且三次样条 + 一维搜索方法能精确恢复时间偏差。算法复杂度为 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），优于 DTW 的 $O(N^2)$。本文采用的平滑处理方法基于 Savitzky-Golay 滤波的经典理论\cite{savitzky1964}，时间同步策略参考了相关领域的研究成果\cite{elson2002}。
+RMSE 达到 $10^{-11}$ 量级，确认附件1数据确实无噪声，三次样条 + 一维搜索可精确恢复时间偏差。算法复杂度 $O(N \log N)$（样条构建）$+ O(M)$（网格搜索），低于 DTW 的 $O(N^2)$。
 
 \begin{figure}[htbp]
     \centering
