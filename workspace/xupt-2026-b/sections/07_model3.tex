@@ -27,7 +27,7 @@
 计算带偏模型残差平方和 $\text{SSE}_1$
 
 \tcp{步骤2：Bootstrap 估计协方差矩阵}
-\For{$b = 1, 2, \ldots, 200$}{
+\For{$b = 1, 2, \ldots, 1000$}{
     重采样数据（分层 Bootstrap，保持时序结构） \\
     重估参数得 $(\Delta\tau^{(b)}, \Delta x^{(b)}, \Delta y^{(b)})$
 }
@@ -100,7 +100,7 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
         $\hat{\Delta\tau}$ & $367.8659$\,s & — \\
         $\hat{\Delta x}$ & $0.0883$\,m & 极小 \\
         $\hat{\Delta y}$ & $0.2959$\,m & 极小 \\
-        Wald $W$ & 2.0659 & $p = 0.356 > 0.05$ \\
+        Wald $W$ & 2.1019 & $p = 0.350 > 0.05$ \\
         $\Delta$AIC & $-2.81$ & $< 2$ \\
         \midrule
         \textbf{判决} & \multicolumn{2}{l}{\textbf{H$_0$：无显著系统偏差}} \\
@@ -119,7 +119,7 @@ $\Delta\text{AIC} \leftarrow \text{AIC}_0 - \text{AIC}_1$
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/fig_p3_wald_chi2.png}
-    \caption{Wald 检验：$\chi^2(2)$ 分布下 $W=2.07$ 远低于临界值 5.991（接受 H$_0$）}
+    \caption{Wald 检验：$\chi^2(2)$ 分布下 $W=2.10$ 远低于临界值 5.991（接受 H$_0$）}
     \label{fig:p3_wald}
 \end{figure}
 

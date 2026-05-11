@@ -80,6 +80,6 @@
 \mathbf{F} = \begin{bmatrix} 1 & \Delta t & \frac{1}{2}\Delta t^2 \\ 0 & 1 & \Delta t \\ 0 & 0 & 1 \end{bmatrix}, \quad
 \mathbf{Q} = q \begin{bmatrix} \frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & \frac{\Delta t^3}{6} \\ \frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} \\ \frac{\Delta t^3}{6} & \frac{\Delta t^2}{2} & \Delta t \end{bmatrix}
 \end{equation}
-二维运动取 $\mathbf{Q}_{6\times6} = \text{blkdiag}(\mathbf{Q}_x, \mathbf{Q}_y)$，参数 $q = 0.1$\,m$^2$/s$^5$，$\Delta t = 0.1$\,s。
+二维运动取 $\mathbf{Q}_{6\times6} = \text{blkdiag}(\mathbf{Q}_x, \mathbf{Q}_y)$，其中 $q = q_a^2$（问题二取 $q_a=5$\,m/s$^2$，问题三取 $q_a=8$\,m/s$^2$），$\Delta t$ 为相邻观测时间差。
 
 \end{document}

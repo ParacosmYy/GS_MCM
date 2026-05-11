@@ -43,7 +43,7 @@ $\mathcal{Z} \leftarrow \{(\boldsymbol{z}_1^k, t_1^k, \sigma_1)\} \cup \{(\tilde
 \tcp{步骤3：初始化卡尔曼滤波器}
 $\hat{\boldsymbol{x}}_0 \leftarrow (\boldsymbol{z}_{\text{first}}, \boldsymbol{0}, \boldsymbol{0})^\top$ \tcp*{初始状态：首观测 + 零速零加}
 $\boldsymbol{P}_0 \leftarrow \text{diag}(\sigma^2, \sigma^2, v_{\max}^2, v_{\max}^2, a_{\max}^2, a_{\max}^2)$ \tcp*{初始协方差}
-$q_a \leftarrow 8$\,m/s$^2$ \tcp*{过程噪声强度}
+$q_a \leftarrow 5$\,m/s$^2$ \tcp*{过程噪声强度}
 
 \tcp{步骤4：异步观测更新循环}
 \For{$(\boldsymbol{z}, t, \sigma) \in \mathcal{Z}$}{
@@ -94,7 +94,7 @@ $q_a \leftarrow 8$\,m/s$^2$ \tcp*{过程噪声强度}
         \draw[arr] (s4) -- (out);
 
         \node[param, right=0.6cm of s2] {$\Delta\tau=-48.44$, $\Delta x=-3.44$, $\Delta y=1.81$};
-        \node[param, right=0.6cm of s4] {6 维状态, $q_a = 8$\,m/s$^2$};
+        \node[param, right=0.6cm of s4] {6 维状态, $q_a = 5$\,m/s$^2$};
     \end{tikzpicture}
     \caption{问题二求解流程}
     \label{fig:flow_p2}
