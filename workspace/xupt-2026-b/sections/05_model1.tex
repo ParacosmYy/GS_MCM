@@ -19,7 +19,7 @@
 采用\textbf{粗搜+精搜}两阶段策略：
 \begin{enumerate}
     \item \textbf{粗搜}：在 $\Delta\tau \in [\Delta\tau_0 - 50, \Delta\tau_0 + 50]$（步长 0.1\,s）上枚举，取 $J$ 最小者为初始值。其中 $\Delta\tau_0 = t_{\text{start}}^{(1)} - t_{\text{start}}^{(2)}$。
-    \item \textbf{精搜}：在粗搜最优 $\pm 1$\,s 范围内用 \texttt{scipy.optimize.minimize\_scalar}（bounded 方法，精度 $10^{-6}$\,s）细化。
+    \item \textbf{精搜}：在粗搜最优 $\pm 1$\,s 范围内用 Brent 法做有界一维优化，收敛精度 $10^{-6}$\,s。
 \end{enumerate}
 
 对齐完成后，10\,Hz 联合轨迹取两路样条均值（无噪声时两路重合）：

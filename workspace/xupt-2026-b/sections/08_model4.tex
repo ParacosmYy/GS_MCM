@@ -41,7 +41,7 @@
     & \sum_{i \in \mathcal{C}_{\text{shoot}}(k)} x_i \le 1, \quad \forall\, \text{目标}\, k \label{eq:cpsat_unique} \\
     & x_i + x_j \le 1, \quad \forall\, |\theta_i - \theta_j| < 60^\circ,\, \text{同目标} \label{eq:cpsat_angle}
 \end{align}
-使用 OR-Tools CP-SAT 求解器 \cite{ortools2024}（4 线程，限时 300\,s），19.9\,s 达到 OPTIMAL。
+使用 OR-Tools CP-SAT 求解器 \cite{ortools2024}（4 线程，限时 300\,s），19.9\,s 内证明全局最优。
 
 \begin{algorithm}[htbp]
 \caption{任务调度（贪心基线 + CP-SAT 精确解）}
